@@ -1,0 +1,78 @@
+{
+    "hostnames": [
+        {
+            "name": "one.one.one.one",
+            "type": "PTR"
+        }
+    ],
+    "addresses": {
+        "ipv4": "1.1.1.1"
+    },
+    "vendor": {},
+    "status": {
+        "state": "up",
+        "reason": "syn-ack"
+    },
+    "tcp": {
+        "53": {
+            "state": "open",
+            "reason": "syn-ack",
+            "name": "domain",
+            "product": "Unbound",
+            "version": "",
+            "extrainfo": "",
+            "conf": "10",
+            "cpe": "cpe:/a:nlnetlabs:unbound"
+        },
+        "443": {
+            "state": "open",
+            "reason": "syn-ack",
+            "name": "http",
+            "product": "Cloudflare http proxy",
+            "version": "",
+            "extrainfo": "",
+            "conf": "10",
+            "cpe": "",
+            "script": {
+                "http-csrf": "Couldn't find any CSRF vulnerabilities.",
+                "http-stored-xss": "Couldn't find any stored XSS vulnerabilities.",
+                "http-dombased-xss": "Couldn't find any DOM based XSS.",
+                "http-enum": "\n  /beta/: Potentially interesting folder\n  /help/: Potentially interesting folder\n",
+                "http-server-header": "cloudflare"
+            }
+        },
+        "8080": {
+            "state": "open",
+            "reason": "syn-ack",
+            "name": "http",
+            "product": "Cloudflare http proxy",
+            "version": "",
+            "extrainfo": "",
+            "conf": "10",
+            "cpe": "",
+            "script": {
+                "http-csrf": "Couldn't find any CSRF vulnerabilities.",
+                "http-dombased-xss": "Couldn't find any DOM based XSS.",
+                "http-stored-xss": "Couldn't find any stored XSS vulnerabilities.",
+                "http-server-header": "cloudflare"
+            }
+        },
+        "8443": {
+            "state": "open",
+            "reason": "syn-ack",
+            "name": "http",
+            "product": "Cloudflare http proxy",
+            "version": "",
+            "extrainfo": "",
+            "conf": "10",
+            "cpe": "",
+            "script": {
+                "http-dombased-xss": "Couldn't find any DOM based XSS.",
+                "http-stored-xss": "Couldn't find any stored XSS vulnerabilities.",
+                "http-csrf": "Couldn't find any CSRF vulnerabilities.",
+                "http-enum": "\n  /beta/: Potentially interesting folder\n  /help/: Potentially interesting folder\n",
+                "http-server-header": "cloudflare"
+            }
+        }
+    }
+}

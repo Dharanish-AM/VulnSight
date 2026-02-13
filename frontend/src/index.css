@@ -1,0 +1,80 @@
+@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap");
+
+:root {
+  --bg-deep: hsl(240, 10%, 2%);
+  --bg-mid: hsl(240, 6%, 6%);
+  --bg-card: hsla(240, 6%, 8%, 0.6);
+  --bg-border: hsla(0, 0%, 100%, 0.05);
+  --bg-border-bright: hsla(0, 0%, 100%, 0.08);
+
+  --accent-blue: hsl(217, 91%, 60%);
+  --accent-emerald: hsl(142, 71%, 45%);
+  --accent-red: hsl(0, 84%, 60%);
+
+  --glow-blue: hsla(217, 91%, 60%, 0.15);
+  --glow-emerald: hsla(142, 71%, 45%, 0.15);
+
+  background-color: var(--bg-deep);
+  color: hsl(210, 40%, 98%);
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  overflow-x: hidden;
+  background-image:
+    radial-gradient(
+      circle at 50% 0%,
+      hsla(217, 91%, 60%, 0.05) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 100% 100%,
+      hsla(142, 71%, 45%, 0.03) 0%,
+      transparent 50%
+    );
+  background-attachment: fixed;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: "Outfit", sans-serif;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  font-weight: 800;
+  font-style: italic;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-deep);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #222;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #333;
+}
+
+/* Selection */
+::selection {
+  background: var(--accent-glow);
+  color: var(--accent-primary);
+}
