@@ -1,6 +1,9 @@
 fastapi
 uvicorn
-python-nmap
-httpx
-python-dotenv
 pydantic
+networkx
+chromadb
+requests
+python-multipart
+# Add any tool specific libraries if needed
+# nmap, nuclei, nikto should be installed on the system
