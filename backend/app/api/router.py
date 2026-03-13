@@ -10,6 +10,8 @@ import os
 from app.scanners.nmap_adapter import NmapAdapter
 from app.scanners.nuclei_adapter import NucleiAdapter
 from app.scanners.nikto_adapter import NiktoAdapter
+from app.scanners.sqlmap_adapter import SQLMapAdapter
+from app.scanners.ffuf_adapter import FFUFAdapter
 from app.services.normalization import normalize_results
 from app.services.enrichment import enrich_vulnerability
 from app.attack_graph.attack_chain import AttackGraphEngine
@@ -31,9 +33,12 @@ class ChatRequest(BaseModel):
 nmap = NmapAdapter()
 nuclei = NucleiAdapter()
 nikto = NiktoAdapter()
+sqlmap = SQLMapAdapter()
+ffuf = FFUFAdapter()
 attack_engine = AttackGraphEngine()
 rag = RAGService()
 
+import time
 from concurrent.futures import ThreadPoolExecutor
 
 def run_pipeline(scan_id: str, target: str):
@@ -41,14 +46,18 @@ def run_pipeline(scan_id: str, target: str):
     
     # Execution in parallel
     results = []
-    with ThreadPoolExecutor(max_workers=3) as executor:
+    with ThreadPoolExecutor(max_workers=5) as executor:
         future_nmap = executor.submit(nmap.run_scan, target)
         future_nuclei = executor.submit(nuclei.run_scan, target)
         future_nikto = executor.submit(nikto.run_scan, target)
+        future_sqlmap = executor.submit(sqlmap.run_scan, target)
+        future_ffuf = executor.submit(ffuf.run_scan, target)
         
         results.extend(future_nmap.result())
         results.extend(future_nuclei.result())
         results.extend(future_nikto.result())
+        results.extend(future_sqlmap.result())
+        results.extend(future_ffuf.result())
     
     # Normalization
     normalized = normalize_results(results)
@@ -73,7 +82,8 @@ def run_pipeline(scan_id: str, target: str):
         "target": target,
         "vulnerabilities": normalized,
         "attack_paths": chains,
-        "status": "completed"
+        "status": "completed",
+        "timestamp": time.time()
     }
     
     scans[scan_id] = report
@@ -153,7 +163,7 @@ async def list_scans():
             "target": data.get("target"),
             "status": data.get("status"),
             "vulnerability_count": len(data.get("vulnerabilities", [])),
-            "timestamp": os.path.getmtime(f"{reports_dir}/{sid}.json") if os.path.exists(f"{reports_dir}/{sid}.json") else None
+            "timestamp": data.get("timestamp") or (os.path.getmtime(f"{reports_dir}/{sid}.json") if os.path.exists(f"{reports_dir}/{sid}.json") else None)
         })
     
     # Then look for files not in memory
@@ -171,7 +181,7 @@ async def list_scans():
                                 "target": data.get("target"),
                                 "status": data.get("status"),
                                 "vulnerability_count": len(data.get("vulnerabilities", [])),
-                                "timestamp": os.path.getmtime(path)
+                                "timestamp": data.get("timestamp") or os.path.getmtime(path)
                             })
                         except:
                             continue

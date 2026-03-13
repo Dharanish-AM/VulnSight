@@ -3,34 +3,57 @@ import ReactMarkdown from 'react-markdown'
 import { api } from './api'
 
 function App() {
-  const [target, setTarget] = useState('')
+  const [target, setTarget] = useState(() => localStorage.getItem('vulnsight_target') || '')
   const [scanning, setScanning] = useState(false)
   const [scanId, setScanId] = useState(null)
   const [status, setStatus] = useState(null)
   const [results, setResults] = useState(null)
   const [chatInput, setChatInput] = useState('')
-  const [chatMessages, setChatMessages] = useState([])
+  const [chatMessages, setChatMessages] = useState(() => {
+    const saved = localStorage.getItem('vulnsight_chatMessages')
+    return saved ? JSON.parse(saved) : []
+  })
   const [chatLoading, setChatLoading] = useState(false)
   const [history, setHistory] = useState([])
   const [showHistory, setShowHistory] = useState(true)
   const [expandedVuln, setExpandedVuln] = useState(null)
+  const [theme, setTheme] = useState(() => localStorage.getItem('vulnsight_theme') || 'dark')
 
   const pollingRef = useRef(null)
+  const chatEndRef = useRef(null)
 
   useEffect(() => {
-    const savedTarget = localStorage.getItem('vulnsight_target')
     const savedScanId = localStorage.getItem('vulnsight_scanId')
-    const savedMessages = localStorage.getItem('vulnsight_chatMessages')
 
-    if (savedTarget) setTarget(savedTarget)
     if (savedScanId) {
       setScanId(savedScanId)
       recoverScan(savedScanId)
     }
-    if (savedMessages) setChatMessages(JSON.parse(savedMessages))
     
     fetchHistory()
   }, [])
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [chatMessages, chatLoading])
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('vulnsight_theme', theme)
+  }, [theme])
+
+  const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark')
+
+  useEffect(() => {
+    localStorage.setItem('vulnsight_chatMessages', JSON.stringify(chatMessages))
+  }, [chatMessages])
+
+  const clearChat = () => {
+    if (window.confirm('Are you sure you want to clear the chat history?')) {
+      setChatMessages([])
+      localStorage.removeItem('vulnsight_chatMessages')
+    }
+  }
 
   const fetchHistory = async () => {
     try {
@@ -69,7 +92,15 @@ function App() {
 
   const recoverScan = async (id) => {
     try {
-      const { status } = await api.getStatus(id)
+      const response = await fetch(`http://localhost:8000/scan/status/${id}`)
+      if (response.status === 404) {
+        console.warn('Recovering: Scan ID not found.')
+        setScanId(null)
+        localStorage.removeItem('vulnsight_scanId')
+        return
+      }
+      
+      const { status } = await response.json()
       setStatus(status)
       if (status === 'completed') {
         const report = await api.getReport(id)
@@ -85,11 +116,11 @@ function App() {
   }
 
   const handleScan = async () => {
-    if (!target) return
     setScanning(true)
     setResults(null)
     setStatus('queued')
     setChatMessages([])
+    localStorage.setItem('vulnsight_target', target)
     try {
       const { scan_id } = await api.startScan(target)
       setScanId(scan_id)
@@ -107,7 +138,17 @@ function App() {
 
     pollingRef.current = setInterval(async () => {
       try {
-        const { status } = await api.getStatus(id)
+        const response = await fetch(`http://localhost:8000/scan/status/${id}`)
+        if (response.status === 404) {
+          console.warn('Scan ID not found, stopping polling.')
+          clearInterval(pollingRef.current)
+          setScanning(false)
+          setScanId(null)
+          localStorage.removeItem('vulnsight_scanId')
+          return
+        }
+        
+        const { status } = await response.json()
         setStatus(status)
 
         if (status === 'completed') {
@@ -115,13 +156,13 @@ function App() {
           const report = await api.getReport(id)
           setResults(report)
           setScanning(false)
-          fetchHistory() // Refresh again once completed
+          fetchHistory()
         } else if (status === 'failed') {
           clearInterval(pollingRef.current)
           setScanning(false)
         }
       } catch (err) {
-        console.error(err)
+        console.error('Polling error:', err)
         clearInterval(pollingRef.current)
         setScanning(false)
       }
@@ -170,6 +211,22 @@ function App() {
         </div>
 
         <div className="flex items-center gap-6">
+          <button 
+            onClick={toggleTheme}
+            className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+            title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
+          >
+            {theme === 'dark' ? (
+              <svg className="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.95 16.95l.707.707M7.05 7.05l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+            )}
+          </button>
+          
           <div className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2">
             <div className={`w-1.5 h-1.5 rounded-full bg-emerald-500 ${scanning ? 'animate-pulse' : ''}`} />
             <span className="text-[10px] font-semibold text-emerald-500 uppercase tracking-wider">
@@ -198,9 +255,9 @@ function App() {
                   </span>
                   <button 
                     onClick={(e) => handleDeleteScan(e, item.id)}
-                    className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-500 transition-all"
+                    className="p-1 text-white/10 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100"
                   >
-                    <svg className="w-3.0 h-3.0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
                   </button>
@@ -208,7 +265,9 @@ function App() {
                 <h4 className="text-sm font-bold truncate text-white/80">{item.target}</h4>
                 <div className="flex justify-between items-center mt-2">
                   <span className="text-[10px] text-white/20">{item.vulnerability_count} Findings</span>
-                  <span className="text-[10px] text-white/20">{item.timestamp ? new Date(item.timestamp * 1000).toLocaleDateString() : ''}</span>
+                  <span className="text-[10px] text-white/20 font-medium">
+                    {item.timestamp ? new Date(item.timestamp * 1000).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) : ''}
+                  </span>
                 </div>
               </div>
             ))}
@@ -339,27 +398,43 @@ function App() {
                 </div>
 
                 {results.attack_paths.length > 0 && (
-                  <div className="space-y-6">
-                    <h3 className="text-xl font-bold tracking-tight">Predicted Attack Chains</h3>
-                    <div className="grid grid-cols-1 gap-4">
+                  <div className="space-y-8">
+                    <div className="flex items-center gap-3">
+                      <div className="w-1 h-6 bg-blue-600 rounded-full" />
+                      <h3 className="text-xl font-bold tracking-tight">Predicted Attack Chains</h3>
+                    </div>
+                    <div className="space-y-6">
                       {results.attack_paths.map((path, idx) => (
-                        <div key={idx} className="bg-white/5 border border-white/5 rounded-2xl p-6 flex items-center gap-6">
-                          <div className="w-10 h-10 rounded-full bg-blue-600/20 flex items-center justify-center border border-blue-500/20 text-blue-500 font-bold text-xs">
-                            #{idx + 1}
-                          </div>
-                          <div className="flex-1 flex items-center gap-4 flex-wrap">
-                            {path.map((node, nIdx) => (
-                              <div key={nIdx} className="flex items-center gap-4">
-                                <div className="px-4 py-2 bg-white/5 rounded-xl border border-white/10 text-[10px] font-bold uppercase tracking-wider">
-                                  {node}
-                                </div>
-                                {nIdx < path.length - 1 && (
-                                  <svg className="w-4 h-4 text-white/10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                  </svg>
-                                )}
+                        <div key={idx} className="group relative">
+                          <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-[2rem] blur opacity-0 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
+                          <div className="relative bg-[#0a0a0a] border border-white/5 rounded-[1.75rem] p-8 flex flex-col gap-6">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest">Chain #{idx + 1}</span>
+                                <div className="h-px w-8 bg-blue-500/20" />
+                                <span className="text-[10px] text-white/40 font-medium">Likelihood: {idx === 0 ? 'High' : 'Moderate'}</span>
                               </div>
-                            ))}
+                            </div>
+                            
+                            <div className="flex items-center gap-4 flex-wrap">
+                              {path.map((node, nIdx) => (
+                                <div key={nIdx} className="flex items-center gap-4">
+                                  <div className="relative px-5 py-3 bg-white/5 rounded-[1.25rem] border border-white/10 group-hover:border-blue-500/30 transition-colors shadow-2xl">
+                                    <div className="flex items-center gap-3">
+                                      <div className={`w-1.5 h-1.5 rounded-full ${nIdx === 0 ? 'bg-emerald-500' : nIdx === path.length - 1 ? 'bg-red-500' : 'bg-blue-500'} shadow-[0_0_8px_rgba(255,255,255,0.2)]`} />
+                                      <span className="text-[11px] font-bold uppercase tracking-wider text-white/80">{node}</span>
+                                    </div>
+                                  </div>
+                                  {nIdx < path.length - 1 && (
+                                    <div className="flex flex-col items-center gap-1">
+                                      <svg className="w-5 h-5 text-white/10 group-hover:text-blue-500/30 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                      </svg>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -388,6 +463,15 @@ function App() {
               <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.6)]" />
               <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-white/80">Neural Core</h3>
             </div>
+            {chatMessages.length > 0 && (
+              <button 
+                onClick={clearChat}
+                className="text-[10px] font-bold uppercase tracking-widest text-white/20 hover:text-red-500 transition-colors"
+                title="Clear Chat History"
+              >
+                Clear
+              </button>
+            )}
           </div>
 
           <div className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar">
@@ -402,13 +486,28 @@ function App() {
             {chatMessages.map((msg, idx) => (
               <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[90%] px-5 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === 'user'
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-blue-600 text-white shadow-[0_4px_12px_rgba(37,99,235,0.2)]'
                   : 'bg-white/5 text-white/80 border border-white/5'
                   }`}>
-                  <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  <div className="markdown-container">
+                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  </div>
                 </div>
               </div>
             ))}
+            
+            {chatLoading && (
+              <div className="flex justify-start">
+                <div className="bg-white/5 border border-white/5 rounded-2xl text-white/50">
+                  <div className="typing-indicator">
+                    <div className="typing-dot"></div>
+                    <div className="typing-dot"></div>
+                    <div className="typing-dot"></div>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div ref={chatEndRef} />
           </div>
 
           <div className="p-8 border-t border-white/5">

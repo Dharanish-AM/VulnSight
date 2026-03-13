@@ -17,7 +17,7 @@ except Exception as e:
 
 class RAGService:
     def __init__(self):
-        self.persist_directory = "app/data/chroma"
+        self.persist_directory = "data/chroma"
         self.fallback_storage = []
         
         if CHROMA_AVAILABLE:
