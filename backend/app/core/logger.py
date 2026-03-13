@@ -43,7 +43,7 @@ class ColoredFormatter(logging.Formatter):
         return formatted
 
 def setup_logging():
-    log_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "logs")
+    log_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "data", "logs")
     os.makedirs(log_dir, exist_ok=True)
     log_file = os.path.join(log_dir, "vulnsight.log")
 

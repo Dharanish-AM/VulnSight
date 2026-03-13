@@ -79,8 +79,8 @@ def run_pipeline(scan_id: str, target: str):
     scans[scan_id] = report
     
     # Save to file system for persistence in MVP
-    os.makedirs("app/data/reports", exist_ok=True)
-    with open(f"app/data/reports/{scan_id}.json", "w") as f:
+    os.makedirs("data/reports", exist_ok=True)
+    with open(f"data/reports/{scan_id}.json", "w") as f:
         json.dump(report, f)
 
 @router.post("/scan/start")
@@ -94,7 +94,7 @@ async def start_scan(request: ScanRequest, background_tasks: BackgroundTasks):
 async def get_status(id: str):
     if id not in scans:
         # Try loading from file
-        path = f"app/data/reports/{id}.json"
+        path = f"data/reports/{id}.json"
         if os.path.exists(path):
             with open(path, "r") as f:
                 scans[id] = json.load(f)
@@ -113,7 +113,7 @@ def ensure_indexed(scan_id: str):
 @router.get("/scan/report/{id}")
 async def get_report(id: str):
     if id not in scans:
-        path = f"app/data/reports/{id}.json"
+        path = f"data/reports/{id}.json"
         if os.path.exists(path):
             with open(path, "r") as f:
                 scans[id] = json.load(f)
@@ -130,7 +130,7 @@ async def chat_query(request: ChatRequest):
     if request.scan_id:
         if request.scan_id not in scans:
             # Attempt to recover from file for RAG context
-            path = f"app/data/reports/{request.scan_id}.json"
+            path = f"data/reports/{request.scan_id}.json"
             if os.path.exists(path):
                 with open(path, "r") as f:
                     report = json.load(f)
@@ -144,7 +144,7 @@ async def chat_query(request: ChatRequest):
 @router.get("/scans")
 async def list_scans():
     all_scans = []
-    reports_dir = "app/data/reports"
+    reports_dir = "data/reports"
     
     # First, combine in-memory scans
     for sid, data in scans.items():
@@ -185,7 +185,7 @@ async def delete_scan(id: str):
     if id in scans:
         del scans[id]
         
-    path = f"app/data/reports/{id}.json"
+    path = f"data/reports/{id}.json"
     if os.path.exists(path):
         os.remove(path)
         return {"status": "deleted"}
@@ -199,7 +199,7 @@ async def export_report(id: str, format: str):
     if id in scans:
         report = scans[id]
     else:
-        path = f"app/data/reports/{id}.json"
+        path = f"data/reports/{id}.json"
         if os.path.exists(path):
             with open(path, "r") as f:
                 report = json.load(f)
