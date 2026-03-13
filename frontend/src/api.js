@@ -28,4 +28,26 @@ export const api = {
     });
     return response.json();
   },
+
+  async listScans() {
+    const response = await fetch(`${API_BASE}/scans`);
+    return response.json();
+  },
+
+  async deleteScan(id) {
+    const response = await fetch(`${API_BASE}/scan/${id}`, {
+      method: "DELETE",
+    });
+    return response.json();
+  },
+
+  async exportReport(id, format) {
+    if (format === 'csv') {
+      window.open(`${API_BASE}/scan/export/${id}/csv`, '_blank');
+      return;
+    }
+    const response = await fetch(`${API_BASE}/scan/export/${id}/${format}`);
+    return response.json();
+  },
 };
+

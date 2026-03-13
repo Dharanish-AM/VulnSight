@@ -11,6 +11,9 @@ function App() {
   const [chatInput, setChatInput] = useState('')
   const [chatMessages, setChatMessages] = useState([])
   const [chatLoading, setChatLoading] = useState(false)
+  const [history, setHistory] = useState([])
+  const [showHistory, setShowHistory] = useState(true)
+  const [expandedVuln, setExpandedVuln] = useState(null)
 
   const pollingRef = useRef(null)
 
@@ -25,20 +28,44 @@ function App() {
       recoverScan(savedScanId)
     }
     if (savedMessages) setChatMessages(JSON.parse(savedMessages))
+    
+    fetchHistory()
   }, [])
 
-  useEffect(() => {
-    localStorage.setItem('vulnsight_target', target)
-  }, [target])
+  const fetchHistory = async () => {
+    try {
+      const data = await api.listScans()
+      setHistory(data)
+    } catch (err) {
+      console.error('Failed to fetch history:', err)
+    }
+  }
 
-  useEffect(() => {
-    if (scanId) localStorage.setItem('vulnsight_scanId', scanId)
-    else localStorage.removeItem('vulnsight_scanId')
-  }, [scanId])
+  const handleDeleteScan = async (e, id) => {
+    e.stopPropagation()
+    if (!window.confirm('Are you sure you want to delete this scan?')) return
+    try {
+      await api.deleteScan(id)
+      if (scanId === id) {
+        setScanId(null)
+        setResults(null)
+        setStatus(null)
+      }
+      fetchHistory()
+    } catch (err) {
+      console.error('Failed to delete scan:', err)
+    }
+  }
 
-  useEffect(() => {
-    localStorage.setItem('vulnsight_chatMessages', JSON.stringify(chatMessages))
-  }, [chatMessages])
+  const handleExport = async (format) => {
+    if (!scanId) return
+    api.exportReport(scanId, format)
+  }
+
+  const handleHistorySelect = async (id) => {
+    setScanId(id)
+    recoverScan(id)
+  }
 
   const recoverScan = async (id) => {
     try {
@@ -67,6 +94,7 @@ function App() {
       const { scan_id } = await api.startScan(target)
       setScanId(scan_id)
       startPolling(scan_id)
+      fetchHistory() // Refresh history to show the new scan
     } catch (err) {
       console.error(err)
       setScanning(false)
@@ -87,6 +115,7 @@ function App() {
           const report = await api.getReport(id)
           setResults(report)
           setScanning(false)
+          fetchHistory() // Refresh again once completed
         } else if (status === 'failed') {
           clearInterval(pollingRef.current)
           setScanning(false)
@@ -123,6 +152,14 @@ function App() {
     <div className="h-screen bg-[#050505] text-[#fcfcfc] flex flex-col font-sans selection:bg-blue-500/20 selection:text-blue-400 overflow-hidden">
       <header className="h-20 shrink-0 flex items-center px-8 justify-between z-50 sticky top-0 bg-[#050505]/80 backdrop-blur-xl border-b border-white/5">
         <div className="flex items-center gap-4">
+          <button 
+            onClick={() => setShowHistory(!showHistory)}
+            className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+          >
+             <svg className={`w-5 h-5 text-white/60 transition-transform ${showHistory ? '' : 'rotate-180'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+            </svg>
+          </button>
           <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-[0_0_20px_rgba(37,99,235,0.4)]">
             <span className="font-bold text-lg">V</span>
           </div>
@@ -136,13 +173,48 @@ function App() {
           <div className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2">
             <div className={`w-1.5 h-1.5 rounded-full bg-emerald-500 ${scanning ? 'animate-pulse' : ''}`} />
             <span className="text-[10px] font-semibold text-emerald-500 uppercase tracking-wider">
-              {scanning ? `Scanner: ${status.toUpperCase()}` : 'System Ready'}
+              {scanning ? `Scanner: ${status?.toUpperCase()}` : 'System Ready'}
             </span>
           </div>
         </div>
       </header>
 
       <div className="flex-1 flex overflow-hidden">
+        {/* History Sidebar */}
+        <aside className={`${showHistory ? 'w-80' : 'w-0'} bg-[#070707] border-r border-white/5 transition-all duration-500 overflow-hidden flex flex-col shrink-0`}>
+          <div className="p-6 border-b border-white/5">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-white/30">Scan History</h3>
+          </div>
+          <div className="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar">
+            {history.map((item) => (
+              <div 
+                key={item.id} 
+                onClick={() => handleHistorySelect(item.id)}
+                className={`group p-4 rounded-2xl cursor-pointer transition-all border ${scanId === item.id ? 'bg-blue-600/10 border-blue-500/30' : 'bg-white/5 border-transparent hover:border-white/10'}`}
+              >
+                <div className="flex justify-between items-start mb-1">
+                  <span className={`text-[8px] font-bold uppercase tracking-tighter ${scanId === item.id ? 'text-blue-400' : 'text-white/20'}`}>
+                    {item.status}
+                  </span>
+                  <button 
+                    onClick={(e) => handleDeleteScan(e, item.id)}
+                    className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-500 transition-all"
+                  >
+                    <svg className="w-3.0 h-3.0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+                <h4 className="text-sm font-bold truncate text-white/80">{item.target}</h4>
+                <div className="flex justify-between items-center mt-2">
+                  <span className="text-[10px] text-white/20">{item.vulnerability_count} Findings</span>
+                  <span className="text-[10px] text-white/20">{item.timestamp ? new Date(item.timestamp * 1000).toLocaleDateString() : ''}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </aside>
+
         <main className="flex-1 overflow-y-auto p-12 custom-scrollbar space-y-16">
           <section className="max-w-2xl mx-auto w-full text-center space-y-8">
             <div className="space-y-3">
@@ -177,13 +249,28 @@ function App() {
           <section className="max-w-6xl mx-auto w-full space-y-10 pb-20">
             {results && (
               <div className="space-y-12">
-                <div className="flex items-baseline justify-between border-b border-white/5 pb-6">
+                <div className="flex items-center justify-between border-b border-white/5 pb-6">
                   <div>
                     <h3 className="text-2xl font-bold tracking-tight">Intelligence Report</h3>
                     <p className="text-xs text-white/30 font-medium uppercase tracking-widest mt-1">{results.target}</p>
                   </div>
-                  <div className="flex gap-4">
-                    <div className="text-center px-4 border-r border-white/5">
+                  <div className="flex gap-4 items-center">
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => handleExport('csv')}
+                        className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-wider hover:bg-white/10 transition-all"
+                      >
+                        Export CSV
+                      </button>
+                      <button 
+                         onClick={() => handleExport('json')}
+                        className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-wider hover:bg-white/10 transition-all"
+                      >
+                        Export JSON
+                      </button>
+                    </div>
+                    <div className="w-px h-8 bg-white/5" />
+                    <div className="text-center px-4">
                       <p className="text-[10px] text-white/20 font-bold uppercase tracking-widest">Findings</p>
                       <p className="text-lg font-bold">{results.vulnerabilities.length}</p>
                     </div>
@@ -196,7 +283,11 @@ function App() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {results.vulnerabilities.map((vuln, i) => (
-                    <div key={i} className="premium-card edge-shine rounded-[2rem] p-6 space-y-6">
+                    <div 
+                      key={i} 
+                      onClick={() => setExpandedVuln(expandedVuln === i ? null : i)}
+                      className={`premium-card edge-shine rounded-[2rem] p-6 space-y-6 cursor-pointer transition-all ${expandedVuln === i ? 'ring-2 ring-blue-500/50 scale-[1.02]' : ''}`}
+                    >
                       <div className="flex justify-between items-start">
                         <div className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${vuln.severity === 'Critical' ? 'bg-red-500/10 text-red-500' :
                           vuln.severity === 'High' ? 'bg-orange-500/10 text-orange-500' :
@@ -209,8 +300,29 @@ function App() {
 
                       <div className="space-y-2">
                         <h4 className="text-lg font-bold tracking-tight leading-tight">{vuln.component}</h4>
-                        <p className="text-xs text-white/40 leading-relaxed line-clamp-3">{vuln.description}</p>
+                        <p className={`text-xs text-white/40 leading-relaxed ${expandedVuln === i ? '' : 'line-clamp-3'}`}>
+                          {vuln.description}
+                        </p>
                       </div>
+
+                      {expandedVuln === i && (
+                        <div className="pt-4 border-t border-white/5 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                           <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-1">
+                                <span className="text-[8px] font-bold text-white/20 uppercase">Port/Service</span>
+                                <span className="text-[10px] font-bold block">{vuln.port || 'N/A'}</span>
+                              </div>
+                              <div className="space-y-1">
+                                <span className="text-[8px] font-bold text-white/20 uppercase">Protocol</span>
+                                <span className="text-[10px] font-bold block">{vuln.protocol || 'TCP'}</span>
+                              </div>
+                           </div>
+                           <div className="space-y-1">
+                              <span className="text-[8px] font-bold text-white/20 uppercase">Remediation Guidance</span>
+                              <p className="text-[10px] text-white/60 leading-relaxed">{vuln.remediation || 'No specific remediation data available yet. Use Neural Core for advice.'}</p>
+                           </div>
+                        </div>
+                      )}
 
                       <div className="pt-4 border-t border-white/5 flex justify-between items-center">
                         <div className="flex flex-col">

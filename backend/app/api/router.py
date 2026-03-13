@@ -1,4 +1,7 @@
-from fastapi import APIRouter, BackgroundTasks, HTTPException
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Response
+from fastapi.responses import FileResponse
+import csv
+import io
 from pydantic import BaseModel
 from typing import List, Optional
 import uuid
@@ -16,6 +19,7 @@ router = APIRouter()
 
 # Global state for MVP (would be in Redis/DB in prod)
 scans = {}
+indexed_scans = set()
 
 class ScanRequest(BaseModel):
     target: str
@@ -61,6 +65,7 @@ def run_pipeline(scan_id: str, target: str):
     
     # Index for RAG
     rag.index_report(scan_id, normalized)
+    indexed_scans.add(scan_id)
     
     # Storage
     report = {
@@ -98,6 +103,13 @@ async def get_status(id: str):
     
     return {"status": scans[id].get("status", "unknown")}
 
+def ensure_indexed(scan_id: str):
+    if scan_id in scans and scan_id not in indexed_scans:
+        report = scans[scan_id]
+        if report.get("status") == "completed":
+            rag.index_report(scan_id, report.get("vulnerabilities", []))
+            indexed_scans.add(scan_id)
+
 @router.get("/scan/report/{id}")
 async def get_report(id: str):
     if id not in scans:
@@ -115,16 +127,113 @@ async def get_report(id: str):
 
 @router.post("/chat/query")
 async def chat_query(request: ChatRequest):
-    if request.scan_id and request.scan_id not in scans:
-        # Attempt to recover from file for RAG context
-        path = f"app/data/reports/{request.scan_id}.json"
-        if os.path.exists(path):
-            with open(path, "r") as f:
-                report = json.load(f)
-                scans[request.scan_id] = report
-                # Re-index for RAG if it was a completed scan
-                if report.get("status") == "completed":
-                    rag.index_report(request.scan_id, report.get("vulnerabilities", []))
+    if request.scan_id:
+        if request.scan_id not in scans:
+            # Attempt to recover from file for RAG context
+            path = f"app/data/reports/{request.scan_id}.json"
+            if os.path.exists(path):
+                with open(path, "r") as f:
+                    report = json.load(f)
+                    scans[request.scan_id] = report
+        
+        ensure_indexed(request.scan_id)
                     
     response = rag.query(request.query, request.scan_id)
     return response
+
+@router.get("/scans")
+async def list_scans():
+    all_scans = []
+    reports_dir = "app/data/reports"
+    
+    # First, combine in-memory scans
+    for sid, data in scans.items():
+        all_scans.append({
+            "id": sid,
+            "target": data.get("target"),
+            "status": data.get("status"),
+            "vulnerability_count": len(data.get("vulnerabilities", [])),
+            "timestamp": os.path.getmtime(f"{reports_dir}/{sid}.json") if os.path.exists(f"{reports_dir}/{sid}.json") else None
+        })
+    
+    # Then look for files not in memory
+    if os.path.exists(reports_dir):
+        for filename in os.listdir(reports_dir):
+            if filename.endswith(".json"):
+                sid = filename[:-5]
+                if sid not in scans:
+                    path = f"{reports_dir}/{filename}"
+                    with open(path, "r") as f:
+                        try:
+                            data = json.load(f)
+                            all_scans.append({
+                                "id": sid,
+                                "target": data.get("target"),
+                                "status": data.get("status"),
+                                "vulnerability_count": len(data.get("vulnerabilities", [])),
+                                "timestamp": os.path.getmtime(path)
+                            })
+                        except:
+                            continue
+                            
+    # Sort by timestamp decending
+    all_scans.sort(key=lambda x: x["timestamp"] or 0, reverse=True)
+    return all_scans
+
+@router.delete("/scan/{id}")
+async def delete_scan(id: str):
+    if id in scans:
+        del scans[id]
+        
+    path = f"app/data/reports/{id}.json"
+    if os.path.exists(path):
+        os.remove(path)
+        return {"status": "deleted"}
+    
+    raise HTTPException(status_code=404, detail="Scan not found")
+
+@router.get("/scan/export/{id}/{format}")
+async def export_report(id: str, format: str):
+    # Load report
+    report = None
+    if id in scans:
+        report = scans[id]
+    else:
+        path = f"app/data/reports/{id}.json"
+        if os.path.exists(path):
+            with open(path, "r") as f:
+                report = json.load(f)
+                
+    if not report:
+        raise HTTPException(status_code=404, detail="Report not found")
+        
+    if format.lower() == "json":
+        return report
+    
+    if format.lower() == "csv":
+        output = io.StringIO()
+        writer = csv.writer(output)
+        
+        # Header
+        writer.writerow(["CVE ID", "Component", "Severity", "Description", "CVSS", "Source Tool"])
+        
+        # Data
+        for v in report.get("vulnerabilities", []):
+            writer.writerow([
+                v.get("cve_id", "N/A"),
+                v.get("component", "N/A"),
+                v.get("severity", "N/A"),
+                v.get("description", "N/A"),
+                v.get("cvss", "N/A"),
+                v.get("source_tool", "N/A")
+            ])
+            
+        output.seek(0)
+        return Response(
+            content=output.getvalue(),
+            media_type="text/csv",
+            headers={"Content-Disposition": f"attachment; filename=vulnsight_report_{id}.csv"}
+        )
+        
+    raise HTTPException(status_code=400, detail="Invalid format. Use 'json' or 'csv'.")
+
