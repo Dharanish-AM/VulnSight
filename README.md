@@ -137,21 +137,6 @@ pip install -r requirements.txt
 
 ## 🧪 Advanced Testing
 
-### Local Test Target Server
-
-VulnSight now includes a local, intentionally insecure target server for scanner validation.
-
-```bash
-./scripts/start_test_server.sh
-```
-
-Recommended targets to enter in the UI:
-
-- `http://127.0.0.1:8081` (general web checks, ffuf/nikto/nuclei)
-- `http://127.0.0.1:8081/product?id=1` (SQLMap-oriented)
-
-Detailed notes: `test_target/README.md`
-
 We provide a specialized script to test the entire lifecycle (Scan → Normalize → Attack Path → RAG Query):
 
 ```bash

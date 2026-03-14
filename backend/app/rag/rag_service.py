@@ -51,9 +51,6 @@ class RAGService:
             metadatas.append({"report_id": report_id, "cve": v['cve_id']})
             ids.append(f"{report_id}_{i}")
 
-        if not documents:
-            return True
-
         if self.collection:
             try:
                 self.collection.add(
