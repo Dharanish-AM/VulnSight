@@ -95,7 +95,17 @@ function App() {
   const handleHistorySelect = async (id) => {
     stopPolling()
     setScanId(id)
-    recoverScan(id)
+    setScanning(false)
+    try {
+      const response = await fetch(`http://localhost:8000/scan/status/${id}`)
+      const { status } = await response.json()
+      setStatus(status)
+      const report = await api.getReport(id)
+      setResults(report)
+      setTarget(report.target)
+    } catch (err) {
+      console.error('Failed to load history item:', err)
+    }
   }
 
   const recoverScan = async (id) => {
