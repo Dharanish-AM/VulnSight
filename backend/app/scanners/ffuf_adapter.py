@@ -10,9 +10,11 @@ class FFUFAdapter:
         self.tool_name = "ffuf"
         # Common wordlist locations on Unix systems
         self.wordlist_paths = [
+            "data/wordlists/common.txt",
+            "/opt/homebrew/share/wordlists/dirb/common.txt",
+            "/usr/local/share/wordlists/dirb/common.txt",
             "/usr/share/wordlists/dirb/common.txt",
-            "/usr/share/seclists/Discovery/Web-Content/common.txt",
-            "tests/mock_wordlist.txt" # Fallback if we create one
+            "tests/mock_wordlist.txt"
         ]
 
     def is_available(self):

@@ -16,6 +16,7 @@ from app.services.normalization import normalize_results
 from app.services.enrichment import enrich_vulnerability
 from app.attack_graph.attack_chain import AttackGraphEngine
 from app.rag.rag_service import RAGService
+from app.core.utils import normalize_target
 
 router = APIRouter()
 
@@ -44,14 +45,19 @@ from concurrent.futures import ThreadPoolExecutor
 def run_pipeline(scan_id: str, target: str):
     scans[scan_id]["status"] = "running"
     
+    # Normalize target for different scanners
+    t_norm = normalize_target(target)
+    t_host = t_norm["host"]
+    t_url = t_norm["url"]
+    
     # Execution in parallel
     results = []
     with ThreadPoolExecutor(max_workers=5) as executor:
-        future_nmap = executor.submit(nmap.run_scan, target)
-        future_nuclei = executor.submit(nuclei.run_scan, target)
-        future_nikto = executor.submit(nikto.run_scan, target)
-        future_sqlmap = executor.submit(sqlmap.run_scan, target)
-        future_ffuf = executor.submit(ffuf.run_scan, target)
+        future_nmap = executor.submit(nmap.run_scan, t_host)
+        future_nuclei = executor.submit(nuclei.run_scan, t_url)
+        future_nikto = executor.submit(nikto.run_scan, t_host)
+        future_sqlmap = executor.submit(sqlmap.run_scan, t_url)
+        future_ffuf = executor.submit(ffuf.run_scan, t_url)
         
         results.extend(future_nmap.result())
         results.extend(future_nuclei.result())

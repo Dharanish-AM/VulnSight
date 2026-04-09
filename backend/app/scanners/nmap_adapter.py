@@ -28,6 +28,10 @@ class NmapAdapter:
             
             result = subprocess.run(cmd, capture_output=True, text=True, check=True)
             
+            if "No targets were specified" in result.stdout or "No targets were specified" in result.stderr:
+                logger.error(f"Nmap failed: No valid target specified. Target: {target}")
+                return []
+
             logger.info(f"Nmap scan completed for {target}")
             return self.parse_results(result.stdout, target)
         except subprocess.CalledProcessError as e:

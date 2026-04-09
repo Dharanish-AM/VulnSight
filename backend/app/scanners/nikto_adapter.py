@@ -28,6 +28,9 @@ class NiktoAdapter:
             
             result = subprocess.run(cmd, capture_output=True, text=True)
             
+            if not result.stdout.strip() and result.stderr:
+                logger.error(f"Nikto produced no output, but stderr has errors: {result.stderr}")
+
             logger.info(f"Nikto scan completed for {target}")
             return self.parse_results(result.stdout, target)
         except Exception as e:

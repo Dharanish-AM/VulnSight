@@ -28,6 +28,9 @@ class NucleiAdapter:
             
             result = subprocess.run(cmd, capture_output=True, text=True)
             
+            if not result.stdout.strip() and result.stderr:
+                logger.error(f"Nuclei produced no output, but stderr has errors: {result.stderr}")
+            
             logger.info(f"Nuclei scan completed for {target}")
             return self.parse_results(result.stdout, target)
         except Exception as e:
