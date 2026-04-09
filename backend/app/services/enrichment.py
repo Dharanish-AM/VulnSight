@@ -8,6 +8,15 @@ def enrich_vulnerability(cve_id: str):
     if cve_id == "N/A":
         return None
 
+    # Robustly handle nested lists from various scanners (e.g. [['CVE-XXXX']])
+    while isinstance(cve_id, list):
+        if not cve_id:
+            return None
+        cve_id = cve_id[0]
+    
+    if not isinstance(cve_id, str):
+        return None
+
     try:
         # Try local enrichment first (Mock for MVP)
         mock_db = {

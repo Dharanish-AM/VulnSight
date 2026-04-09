@@ -22,17 +22,20 @@ class NiktoAdapter:
             return []
 
         try:
-            cmd = ["nikto", "-h", target, "-Format", "csv", "-o", "-"]
+            cmd = ["nikto", "-h", target, "-Format", "csv", "-o", "-", "-Tuning", "1,2,3", "-timeout", "5"]
             logger.info(f"Starting Nikto scan for {target}")
             logger.debug(f"Executing command: {' '.join(cmd)}")
             
-            result = subprocess.run(cmd, capture_output=True, text=True)
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
             
             if not result.stdout.strip() and result.stderr:
                 logger.error(f"Nikto produced no output, but stderr has errors: {result.stderr}")
 
             logger.info(f"Nikto scan completed for {target}")
             return self.parse_results(result.stdout, target)
+        except subprocess.TimeoutExpired:
+            logger.warning(f"Nikto scan timed out for {target}")
+            return []
         except Exception as e:
             logger.error(f"Unexpected error during Nikto scan for {target}: {str(e)}")
             return []

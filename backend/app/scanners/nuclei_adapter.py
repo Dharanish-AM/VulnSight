@@ -45,9 +45,13 @@ class NucleiAdapter:
                 data = json.loads(line)
                 info = data.get("info", {})
                 classification = info.get("classification", {})
+                cve_id = classification.get("cve-id")
+                if isinstance(cve_id, list):
+                    cve_id = cve_id[0] if cve_id else "N/A"
+                
                 vulns.append({
                     "target": target,
-                    "cve_id": classification.get("cve-id") or "N/A",
+                    "cve_id": cve_id or "N/A",
                     "severity": info.get("severity", "Info").capitalize(),
                     "cvss": classification.get("cvss-score") or 0.0,
                     "description": info.get("description") or "No description",

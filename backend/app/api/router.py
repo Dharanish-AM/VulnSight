@@ -52,52 +52,74 @@ def run_pipeline(scan_id: str, target: str):
     
     # Execution in parallel
     results = []
+    from concurrent.futures import as_completed
+    
     with ThreadPoolExecutor(max_workers=5) as executor:
-        future_nmap = executor.submit(nmap.run_scan, t_host)
-        future_nuclei = executor.submit(nuclei.run_scan, t_url)
-        future_nikto = executor.submit(nikto.run_scan, t_host)
-        future_sqlmap = executor.submit(sqlmap.run_scan, t_url)
-        future_ffuf = executor.submit(ffuf.run_scan, t_url)
+        futures = {
+            executor.submit(nmap.run_scan, t_host): "nmap",
+            executor.submit(nuclei.run_scan, t_url): "nuclei",
+            executor.submit(nikto.run_scan, t_host): "nikto",
+            executor.submit(sqlmap.run_scan, t_url): "sqlmap",
+            executor.submit(ffuf.run_scan, t_url): "ffuf"
+        }
         
-        results.extend(future_nmap.result())
-        results.extend(future_nuclei.result())
-        results.extend(future_nikto.result())
-        results.extend(future_sqlmap.result())
-        results.extend(future_ffuf.result())
+        # 10 minute global timeout for the entire set of scanners
+        try:
+            for future in as_completed(futures, timeout=600):
+                tool = futures[future]
+                try:
+                    tool_results = future.result()
+                    results.extend(tool_results)
+                    # Update intermediate status/findings in memory
+                    scans[scan_id]["vulnerabilities"] = scans[scan_id].get("vulnerabilities", []) + tool_results
+                except Exception as e:
+                    import logging
+                    logger = logging.getLogger(__name__)
+                    logger.error(f"Scanner {tool} failed: {str(e)}")
+        except Exception as e:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Scanner pipeline error: {str(e)}")
     
-    # Normalization
-    normalized = normalize_results(results)
-    
-    # Enrichment
-    for v in normalized:
-        extra = enrich_vulnerability(v["cve_id"])
-        if extra:
-            v.update(extra)
-            
-    # Attack Path
-    attack_engine.generate_graph(normalized)
-    chains = attack_engine.get_ranked_chains()
-    
-    # Index for RAG
-    rag.index_report(scan_id, normalized)
-    indexed_scans.add(scan_id)
-    
-    # Storage
-    report = {
-        "id": scan_id,
-        "target": target,
-        "vulnerabilities": normalized,
-        "attack_paths": chains,
-        "status": "completed",
-        "timestamp": time.time()
-    }
-    
-    scans[scan_id] = report
-    
-    # Save to file system for persistence in MVP
-    os.makedirs("data/reports", exist_ok=True)
-    with open(f"data/reports/{scan_id}.json", "w") as f:
-        json.dump(report, f)
+    try:
+        # Normalization
+        normalized = normalize_results(results)
+        
+        # Enrichment
+        for v in normalized:
+            extra = enrich_vulnerability(v["cve_id"])
+            if extra:
+                v.update(extra)
+                
+        # Attack Path
+        attack_engine.generate_graph(normalized)
+        chains = attack_engine.get_ranked_chains()
+        
+        # Index for RAG
+        rag.index_report(scan_id, normalized)
+        indexed_scans.add(scan_id)
+        
+        # Storage
+        report = {
+            "id": scan_id,
+            "target": target,
+            "vulnerabilities": normalized,
+            "attack_paths": chains,
+            "status": "completed",
+            "timestamp": time.time()
+        }
+        
+        scans[scan_id] = report
+        
+        # Save to file system for persistence in MVP
+        os.makedirs("data/reports", exist_ok=True)
+        with open(f"data/reports/{scan_id}.json", "w") as f:
+            json.dump(report, f)
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Pipeline post-processing failed for {scan_id}: {str(e)}")
+        scans[scan_id]["status"] = "failed"
 
 @router.post("/scan/start")
 async def start_scan(request: ScanRequest, background_tasks: BackgroundTasks):
@@ -136,8 +158,8 @@ async def get_report(id: str):
         else:
             raise HTTPException(status_code=404, detail="Scan not found")
             
-    if scans[id].get("status") != "completed":
-        raise HTTPException(status_code=400, detail="Scan not yet completed")
+    if scans[id].get("status") not in ["completed", "running"]:
+        raise HTTPException(status_code=400, detail="Scan not yet in a state to provide report")
         
     return scans[id]
 

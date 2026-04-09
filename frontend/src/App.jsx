@@ -85,7 +85,15 @@ function App() {
     api.exportReport(scanId, format)
   }
 
+  const stopPolling = () => {
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current)
+      pollingRef.current = null
+    }
+  }
+
   const handleHistorySelect = async (id) => {
+    stopPolling()
     setScanId(id)
     recoverScan(id)
   }
@@ -105,6 +113,8 @@ function App() {
       if (status === 'completed') {
         const report = await api.getReport(id)
         setResults(report)
+        setTarget(report.target)
+        setScanning(false)
       } else if (status === 'running' || status === 'queued') {
         setScanning(true)
         startPolling(id)
@@ -157,6 +167,10 @@ function App() {
           setResults(report)
           setScanning(false)
           fetchHistory()
+        } else if (status === 'running') {
+          // Fetch partial results while running
+          const report = await api.getReport(id)
+          setResults(report)
         } else if (status === 'failed') {
           clearInterval(pollingRef.current)
           setScanning(false)
@@ -180,7 +194,7 @@ function App() {
 
     try {
       const data = await api.askAI(chatInput, scanId)
-      const aiResponse = `### ${data.Summary}\n\n**Attack Explanation:** ${data['Attack Explanation']}\n\n**Mitigation:** ${data.Mitigation}\n\n**References:**\n${data.References.map(r => `- [${r}](${r})`).join('\n')}`
+      const aiResponse = `### ${data.Summary}\n\n**Attack Explanation:** ${data['Attack Explanation']}\n\n**Mitigation:** ${data.Mitigation}\n\n**References:**\n${(data.References || []).map(r => `- [${r}](${r})`).join('\n')}`
       setChatMessages(prev => [...prev, { role: 'ai', content: aiResponse }])
     } catch (err) {
       console.error(err)
@@ -331,17 +345,17 @@ function App() {
                     <div className="w-px h-8 bg-white/5" />
                     <div className="text-center px-4">
                       <p className="text-[10px] text-white/20 font-bold uppercase tracking-widest">Findings</p>
-                      <p className="text-lg font-bold">{results.vulnerabilities.length}</p>
+                      <p className="text-lg font-bold">{results.vulnerabilities?.length || 0}</p>
                     </div>
                     <div className="text-center px-4">
                       <p className="text-[10px] text-white/20 font-bold uppercase tracking-widest">Paths</p>
-                      <p className="text-lg font-bold">{results.attack_paths.length}</p>
+                      <p className="text-lg font-bold">{results.attack_paths?.length || 0}</p>
                     </div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {results.vulnerabilities.map((vuln, i) => (
+                  {results.vulnerabilities?.map((vuln, i) => (
                     <div 
                       key={i} 
                       onClick={() => setExpandedVuln(expandedVuln === i ? null : i)}
@@ -397,7 +411,7 @@ function App() {
                   ))}
                 </div>
 
-                {results.attack_paths.length > 0 && (
+                {results.attack_paths?.length > 0 && (
                   <div className="space-y-8">
                     <div className="flex items-center gap-3">
                       <div className="w-1 h-6 bg-blue-600 rounded-full" />

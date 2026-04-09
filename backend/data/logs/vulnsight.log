@@ -1,69 +1,214 @@
-2026-04-09 20:46:26,369 - vulnsight - INFO - OPTIONS /scan/start - Status: 200 - Duration: 0.27ms
-2026-04-09 20:46:26,374 - vulnsight - INFO - POST /scan/start - Status: 200 - Duration: 3.23ms
-2026-04-09 20:46:26,400 - vulnsight - INFO - GET /scans - Status: 200 - Duration: 13.60ms
-2026-04-09 20:46:26,400 - app.scanners.nmap_adapter - INFO - Starting Nmap scan for scanme.nmap.org
-2026-04-09 20:46:26,433 - app.scanners.ffuf_adapter - INFO - Starting FFUF scan for https://scanme.nmap.org
-2026-04-09 20:46:26,461 - app.scanners.nikto_adapter - INFO - Starting Nikto scan for scanme.nmap.org
-2026-04-09 20:46:26,519 - app.scanners.nuclei_adapter - INFO - Starting Nuclei scan for https://scanme.nmap.org
-2026-04-09 20:46:26,852 - app.scanners.sqlmap_adapter - INFO - Starting SQLMap scan for https://scanme.nmap.org
-2026-04-09 20:46:27,447 - app.scanners.ffuf_adapter - INFO - FFUF scan completed for https://scanme.nmap.org
-2026-04-09 20:46:27,455 - app.scanners.ffuf_adapter - INFO - FFUF parsing finished: Found 0 vulnerabilities for https://scanme.nmap.org
-2026-04-09 20:46:28,780 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.56ms
-2026-04-09 20:46:29,280 - app.scanners.sqlmap_adapter - INFO - SQLMap scan completed for https://scanme.nmap.org
-2026-04-09 20:46:29,280 - app.scanners.sqlmap_adapter - INFO - SQLMap parsing finished: Found 0 vulnerabilities for https://scanme.nmap.org
-2026-04-09 20:46:30,780 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.39ms
-2026-04-09 20:46:32,779 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.20ms
-2026-04-09 20:46:34,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.73ms
-2026-04-09 20:46:36,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.65ms
-2026-04-09 20:46:38,559 - app.scanners.nuclei_adapter - INFO - Nuclei scan completed for https://scanme.nmap.org
-2026-04-09 20:46:38,559 - app.scanners.nuclei_adapter - INFO - Nuclei parsing finished: Found 0 vulnerabilities for https://scanme.nmap.org
-2026-04-09 20:46:38,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.72ms
-2026-04-09 20:46:40,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.65ms
-2026-04-09 20:46:41,134 - app.scanners.nmap_adapter - INFO - Nmap scan completed for scanme.nmap.org
-2026-04-09 20:46:41,136 - app.scanners.nmap_adapter - INFO - Nmap parsing finished: Found 122 vulnerabilities for scanme.nmap.org
-2026-04-09 20:46:42,780 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.61ms
-2026-04-09 20:46:44,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.72ms
-2026-04-09 20:46:46,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.67ms
-2026-04-09 20:46:48,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.81ms
-2026-04-09 20:46:50,780 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.63ms
-2026-04-09 20:46:52,782 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 1.03ms
-2026-04-09 20:46:54,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.66ms
-2026-04-09 20:46:56,780 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.64ms
-2026-04-09 20:46:58,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.74ms
-2026-04-09 20:47:00,782 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.86ms
-2026-04-09 20:47:02,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.70ms
-2026-04-09 20:47:04,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.67ms
-2026-04-09 20:47:06,780 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.69ms
-2026-04-09 20:47:08,780 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.94ms
-2026-04-09 20:47:10,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.67ms
-2026-04-09 20:47:12,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.71ms
-2026-04-09 20:47:14,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.85ms
-2026-04-09 20:47:16,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.67ms
-2026-04-09 20:47:18,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.69ms
-2026-04-09 20:47:20,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.63ms
-2026-04-09 20:47:22,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.77ms
-2026-04-09 20:47:24,780 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.67ms
-2026-04-09 20:47:26,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.73ms
-2026-04-09 20:48:00,783 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.83ms
-2026-04-09 20:49:00,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.73ms
-2026-04-09 20:50:00,783 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.71ms
-2026-04-09 20:50:03,742 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.38ms
-2026-04-09 20:50:04,381 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.55ms
-2026-04-09 20:50:06,381 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.62ms
-2026-04-09 20:50:08,782 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.77ms
-2026-04-09 20:50:10,780 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.69ms
-2026-04-09 20:50:12,780 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.48ms
-2026-04-09 20:50:14,381 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.54ms
-2026-04-09 20:50:16,783 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.78ms
-2026-04-09 20:50:18,780 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.46ms
-2026-04-09 20:50:20,782 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.66ms
-2026-04-09 20:50:22,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.52ms
-2026-04-09 20:50:24,780 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.49ms
-2026-04-09 20:50:26,780 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.32ms
-2026-04-09 20:50:28,780 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.56ms
-2026-04-09 20:50:30,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.77ms
-2026-04-09 20:50:32,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.71ms
-2026-04-09 20:50:34,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.76ms
-2026-04-09 20:50:36,780 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.64ms
-2026-04-09 20:50:38,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.56ms
-2026-04-09 20:50:40,781 - vulnsight - INFO - GET /scan/status/d0fc9d30-7bbe-4ade-b3bb-2856f59cda69 - Status: 200 - Duration: 0.98ms
+2026-04-09 21:28:00,319 - app.scanners.nikto_adapter - INFO - Nikto scan completed for scanme.nmap.org
+2026-04-09 21:28:00,319 - app.scanners.nikto_adapter - INFO - Nikto parsing finished: Found 7 vulnerabilities for scanme.nmap.org
+2026-04-09 21:28:00,320 - app.services.enrichment - ERROR - Enrichment failed for ['cve-2023-48795']: cannot use 'list' as a dict key (unhashable type: 'list')
+2026-04-09 21:28:21,209 - vulnsight - INFO - POST /scan/start - Status: 200 - Duration: 2.69ms
+2026-04-09 21:28:21,235 - vulnsight - INFO - GET /scans - Status: 200 - Duration: 6.43ms
+2026-04-09 21:28:21,246 - app.scanners.nmap_adapter - INFO - Starting Nmap scan for scanme.nmap.org
+2026-04-09 21:28:21,262 - app.scanners.ffuf_adapter - INFO - Starting FFUF scan for http://scanme.nmap.org
+2026-04-09 21:28:21,339 - app.scanners.nikto_adapter - INFO - Starting Nikto scan for scanme.nmap.org
+2026-04-09 21:28:21,488 - app.scanners.nuclei_adapter - INFO - Starting Nuclei scan for http://scanme.nmap.org
+2026-04-09 21:28:21,707 - app.scanners.sqlmap_adapter - INFO - Starting SQLMap scan for http://scanme.nmap.org
+2026-04-09 21:28:21,784 - app.scanners.ffuf_adapter - INFO - FFUF scan completed for http://scanme.nmap.org
+2026-04-09 21:28:21,784 - app.scanners.ffuf_adapter - INFO - FFUF parsing finished: Found 1 vulnerabilities for http://scanme.nmap.org
+2026-04-09 21:28:23,146 - app.scanners.sqlmap_adapter - INFO - SQLMap scan completed for http://scanme.nmap.org
+2026-04-09 21:28:23,154 - app.scanners.sqlmap_adapter - INFO - SQLMap parsing finished: Found 0 vulnerabilities for http://scanme.nmap.org
+2026-04-09 21:28:23,215 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.62ms
+2026-04-09 21:28:23,246 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.32ms
+2026-04-09 21:28:26,073 - vulnsight - INFO - OPTIONS /scan/5bb0575f-5c42-4c97-b7d8-4594a5cd259b - Status: 200 - Duration: 0.19ms
+2026-04-09 21:28:26,086 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.35ms
+2026-04-09 21:28:26,107 - vulnsight - INFO - DELETE /scan/5bb0575f-5c42-4c97-b7d8-4594a5cd259b - Status: 200 - Duration: 16.92ms
+2026-04-09 21:28:26,116 - vulnsight - INFO - GET /scans - Status: 200 - Duration: 0.29ms
+2026-04-09 21:28:26,131 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.20ms
+2026-04-09 21:28:27,214 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.20ms
+2026-04-09 21:28:27,217 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.17ms
+2026-04-09 21:28:29,216 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.62ms
+2026-04-09 21:28:29,220 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.56ms
+2026-04-09 21:28:31,215 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.53ms
+2026-04-09 21:28:31,219 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.70ms
+2026-04-09 21:28:33,215 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.40ms
+2026-04-09 21:28:33,218 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.19ms
+2026-04-09 21:28:35,216 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.71ms
+2026-04-09 21:28:35,221 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.62ms
+2026-04-09 21:28:35,841 - app.scanners.nmap_adapter - INFO - Nmap scan completed for scanme.nmap.org
+2026-04-09 21:28:35,843 - app.scanners.nmap_adapter - INFO - Nmap parsing finished: Found 122 vulnerabilities for scanme.nmap.org
+2026-04-09 21:28:37,215 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.58ms
+2026-04-09 21:28:37,221 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 4.22ms
+2026-04-09 21:28:39,215 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.51ms
+2026-04-09 21:28:39,222 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.47ms
+2026-04-09 21:28:41,215 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.68ms
+2026-04-09 21:28:41,223 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 4.29ms
+2026-04-09 21:28:43,216 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.61ms
+2026-04-09 21:28:43,225 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.57ms
+2026-04-09 21:28:45,215 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.65ms
+2026-04-09 21:28:45,223 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.85ms
+2026-04-09 21:28:45,791 - vulnsight - INFO - GET /scans - Status: 200 - Duration: 0.53ms
+2026-04-09 21:28:45,794 - vulnsight - INFO - GET /scans - Status: 200 - Duration: 0.64ms
+2026-04-09 21:28:47,588 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.53ms
+2026-04-09 21:28:49,596 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.57ms
+2026-04-09 21:28:49,603 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.45ms
+2026-04-09 21:28:51,596 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.53ms
+2026-04-09 21:28:51,602 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 2.97ms
+2026-04-09 21:28:53,596 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.19ms
+2026-04-09 21:28:53,599 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.94ms
+2026-04-09 21:28:55,810 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.70ms
+2026-04-09 21:28:55,820 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.57ms
+2026-04-09 21:28:57,809 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.87ms
+2026-04-09 21:28:57,818 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.61ms
+2026-04-09 21:28:59,810 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.90ms
+2026-04-09 21:28:59,816 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.32ms
+2026-04-09 21:29:01,809 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.71ms
+2026-04-09 21:29:01,816 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.19ms
+2026-04-09 21:29:03,808 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.59ms
+2026-04-09 21:29:03,813 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 2.45ms
+2026-04-09 21:29:05,809 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.69ms
+2026-04-09 21:29:05,815 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.29ms
+2026-04-09 21:29:07,810 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.59ms
+2026-04-09 21:29:07,817 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.30ms
+2026-04-09 21:29:09,809 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.68ms
+2026-04-09 21:29:09,816 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.70ms
+2026-04-09 21:29:11,809 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.79ms
+2026-04-09 21:29:11,815 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 2.60ms
+2026-04-09 21:29:13,595 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.50ms
+2026-04-09 21:29:13,601 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.56ms
+2026-04-09 21:29:15,595 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.27ms
+2026-04-09 21:29:15,599 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 1.34ms
+2026-04-09 21:29:17,810 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.96ms
+2026-04-09 21:29:17,816 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.31ms
+2026-04-09 21:29:19,812 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.84ms
+2026-04-09 21:29:19,831 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 2.79ms
+2026-04-09 21:29:21,809 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.67ms
+2026-04-09 21:29:21,816 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.37ms
+2026-04-09 21:29:23,809 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.69ms
+2026-04-09 21:29:23,817 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 2.92ms
+2026-04-09 21:29:25,808 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.27ms
+2026-04-09 21:29:25,812 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 1.48ms
+2026-04-09 21:29:27,596 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 1.41ms
+2026-04-09 21:29:27,602 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.47ms
+2026-04-09 21:29:29,807 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.19ms
+2026-04-09 21:29:29,810 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 1.69ms
+2026-04-09 21:29:31,808 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.52ms
+2026-04-09 21:29:31,814 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.26ms
+2026-04-09 21:29:33,809 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.80ms
+2026-04-09 21:29:33,816 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.34ms
+2026-04-09 21:29:35,810 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.73ms
+2026-04-09 21:29:35,816 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.25ms
+2026-04-09 21:29:37,810 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.73ms
+2026-04-09 21:29:37,817 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.31ms
+2026-04-09 21:29:39,810 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.77ms
+2026-04-09 21:29:39,817 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.44ms
+2026-04-09 21:29:41,597 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.71ms
+2026-04-09 21:29:41,604 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.93ms
+2026-04-09 21:29:43,596 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.55ms
+2026-04-09 21:29:43,604 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.78ms
+2026-04-09 21:29:45,595 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.28ms
+2026-04-09 21:29:45,600 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 1.49ms
+2026-04-09 21:29:47,810 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.72ms
+2026-04-09 21:29:47,816 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.42ms
+2026-04-09 21:29:49,595 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.45ms
+2026-04-09 21:29:49,602 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.32ms
+2026-04-09 21:29:51,781 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.27ms
+2026-04-09 21:29:52,008 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 1.19ms
+2026-04-09 21:29:53,810 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.21ms
+2026-04-09 21:29:53,813 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 1.20ms
+2026-04-09 21:29:55,810 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.87ms
+2026-04-09 21:29:55,817 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.42ms
+2026-04-09 21:29:57,809 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.73ms
+2026-04-09 21:29:57,816 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.41ms
+2026-04-09 21:29:59,808 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.76ms
+2026-04-09 21:29:59,814 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 2.97ms
+2026-04-09 21:30:01,810 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.74ms
+2026-04-09 21:30:01,816 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.28ms
+2026-04-09 21:30:03,808 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.18ms
+2026-04-09 21:30:03,811 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 1.00ms
+2026-04-09 21:30:05,807 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.21ms
+2026-04-09 21:30:05,810 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 1.01ms
+2026-04-09 21:30:07,839 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 5.09ms
+2026-04-09 21:30:07,846 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 2.75ms
+2026-04-09 21:30:09,609 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.64ms
+2026-04-09 21:30:09,618 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 2.81ms
+2026-04-09 21:30:11,596 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.55ms
+2026-04-09 21:30:11,603 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.34ms
+2026-04-09 21:30:13,595 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.20ms
+2026-04-09 21:30:13,599 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 1.05ms
+2026-04-09 21:30:15,809 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.70ms
+2026-04-09 21:30:15,815 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.37ms
+2026-04-09 21:30:17,811 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.73ms
+2026-04-09 21:30:17,818 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.43ms
+2026-04-09 21:30:19,809 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.54ms
+2026-04-09 21:30:19,814 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 2.61ms
+2026-04-09 21:30:21,810 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.81ms
+2026-04-09 21:30:21,819 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 3.57ms
+2026-04-09 21:30:22,726 - vulnsight - INFO - GET /scans - Status: 200 - Duration: 0.98ms
+2026-04-09 21:30:22,730 - vulnsight - INFO - GET /scans - Status: 200 - Duration: 1.21ms
+2026-04-09 21:30:28,005 - app.scanners.nikto_adapter - INFO - Nikto scan completed for scanme.nmap.org
+2026-04-09 21:30:28,006 - app.scanners.nikto_adapter - INFO - Nikto parsing finished: Found 4 vulnerabilities for scanme.nmap.org
+2026-04-09 21:30:28,087 - app.scanners.nuclei_adapter - INFO - Nuclei scan completed for http://scanme.nmap.org
+2026-04-09 21:30:28,088 - app.scanners.nuclei_adapter - INFO - Nuclei parsing finished: Found 30 vulnerabilities for http://scanme.nmap.org
+2026-04-09 21:30:35,852 - vulnsight - INFO - GET /scans - Status: 200 - Duration: 3.37ms
+2026-04-09 21:30:35,855 - vulnsight - INFO - GET /scans - Status: 200 - Duration: 1.06ms
+2026-04-09 21:30:37,251 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 1.66ms
+2026-04-09 21:30:37,262 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 5.40ms
+2026-04-09 21:30:53,468 - vulnsight - INFO - POST /chat/query - Status: 200 - Duration: 10065.52ms
+2026-04-09 21:32:39,330 - vulnsight - INFO - GET /scans - Status: 200 - Duration: 4.42ms
+2026-04-09 21:32:39,335 - vulnsight - INFO - GET /scans - Status: 200 - Duration: 1.24ms
+2026-04-09 21:32:46,110 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 2.69ms
+2026-04-09 21:32:46,119 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 4.80ms
+2026-04-09 21:33:13,302 - vulnsight - INFO - GET /scans - Status: 200 - Duration: 57.89ms
+2026-04-09 21:33:13,324 - vulnsight - INFO - GET /scans - Status: 200 - Duration: 1.74ms
+2026-04-09 21:33:40,893 - vulnsight - INFO - GET /scan/status/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.47ms
+2026-04-09 21:33:40,904 - vulnsight - INFO - GET /scan/report/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 4.36ms
+2026-04-09 21:35:33,212 - vulnsight - INFO - GET /scans - Status: 200 - Duration: 1.54ms
+2026-04-09 21:35:33,215 - vulnsight - INFO - GET /scans - Status: 200 - Duration: 0.55ms
+2026-04-09 21:35:34,756 - vulnsight - INFO - OPTIONS /scan/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 0.65ms
+2026-04-09 21:35:34,763 - vulnsight - INFO - DELETE /scan/d366c91c-dc4e-4937-a1ec-1be0ac89d727 - Status: 200 - Duration: 2.32ms
+2026-04-09 21:35:34,796 - vulnsight - INFO - GET /scans - Status: 200 - Duration: 0.51ms
+2026-04-09 21:35:35,560 - vulnsight - INFO - GET /scans - Status: 200 - Duration: 0.52ms
+2026-04-09 21:35:35,562 - vulnsight - INFO - GET /scans - Status: 200 - Duration: 0.43ms
+2026-04-09 21:35:38,104 - vulnsight - INFO - GET /scans - Status: 200 - Duration: 0.40ms
+2026-04-09 21:35:38,105 - vulnsight - INFO - GET /scans - Status: 200 - Duration: 0.40ms
+2026-04-09 21:35:40,275 - vulnsight - INFO - OPTIONS /scan/start - Status: 200 - Duration: 0.29ms
+2026-04-09 21:35:40,280 - vulnsight - INFO - POST /scan/start - Status: 200 - Duration: 2.59ms
+2026-04-09 21:35:40,302 - vulnsight - INFO - GET /scans - Status: 200 - Duration: 10.16ms
+2026-04-09 21:35:40,306 - app.scanners.nmap_adapter - INFO - Starting Nmap scan for scanme.nmap.org
+2026-04-09 21:35:40,333 - app.scanners.ffuf_adapter - INFO - Starting FFUF scan for http://scanme.nmap.org
+2026-04-09 21:35:40,399 - app.scanners.nikto_adapter - INFO - Starting Nikto scan for scanme.nmap.org
+2026-04-09 21:35:40,523 - app.scanners.nuclei_adapter - INFO - Starting Nuclei scan for http://scanme.nmap.org
+2026-04-09 21:35:40,801 - app.scanners.sqlmap_adapter - INFO - Starting SQLMap scan for http://scanme.nmap.org
+2026-04-09 21:35:40,854 - app.scanners.ffuf_adapter - INFO - FFUF scan completed for http://scanme.nmap.org
+2026-04-09 21:35:40,855 - app.scanners.ffuf_adapter - INFO - FFUF parsing finished: Found 1 vulnerabilities for http://scanme.nmap.org
+2026-04-09 21:35:42,097 - app.scanners.sqlmap_adapter - INFO - SQLMap scan completed for http://scanme.nmap.org
+2026-04-09 21:35:42,102 - app.scanners.sqlmap_adapter - INFO - SQLMap parsing finished: Found 0 vulnerabilities for http://scanme.nmap.org
+2026-04-09 21:35:42,284 - vulnsight - INFO - GET /scan/status/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 0.45ms
+2026-04-09 21:35:42,302 - vulnsight - INFO - GET /scan/report/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 0.51ms
+2026-04-09 21:35:44,815 - vulnsight - INFO - GET /scan/status/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 0.27ms
+2026-04-09 21:35:44,848 - vulnsight - INFO - GET /scan/report/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 0.24ms
+2026-04-09 21:35:46,814 - vulnsight - INFO - GET /scan/status/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 0.25ms
+2026-04-09 21:35:46,816 - vulnsight - INFO - GET /scan/report/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 0.20ms
+2026-04-09 21:35:48,572 - vulnsight - INFO - GET /scan/status/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 0.29ms
+2026-04-09 21:35:48,576 - vulnsight - INFO - GET /scan/report/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 0.21ms
+2026-04-09 21:35:50,284 - vulnsight - INFO - GET /scan/status/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 0.44ms
+2026-04-09 21:35:50,287 - vulnsight - INFO - GET /scan/report/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 0.55ms
+2026-04-09 21:35:52,811 - vulnsight - INFO - GET /scan/status/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 1.03ms
+2026-04-09 21:35:52,820 - vulnsight - INFO - GET /scan/report/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 0.67ms
+2026-04-09 21:35:54,285 - vulnsight - INFO - GET /scan/status/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 0.25ms
+2026-04-09 21:35:54,287 - vulnsight - INFO - GET /scan/report/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 0.28ms
+2026-04-09 21:35:55,164 - app.scanners.nmap_adapter - INFO - Nmap scan completed for scanme.nmap.org
+2026-04-09 21:35:55,167 - app.scanners.nmap_adapter - INFO - Nmap parsing finished: Found 122 vulnerabilities for scanme.nmap.org
+2026-04-09 21:35:56,812 - vulnsight - INFO - GET /scan/status/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 0.57ms
+2026-04-09 21:35:56,820 - vulnsight - INFO - GET /scan/report/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 5.70ms
+2026-04-09 21:35:58,810 - vulnsight - INFO - GET /scan/status/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 0.45ms
+2026-04-09 21:35:58,816 - vulnsight - INFO - GET /scan/report/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 2.72ms
+2026-04-09 21:36:00,818 - vulnsight - INFO - GET /scan/status/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 1.14ms
+2026-04-09 21:36:00,827 - vulnsight - INFO - GET /scan/report/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 3.58ms
+2026-04-09 21:36:02,812 - vulnsight - INFO - GET /scan/status/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 0.64ms
+2026-04-09 21:36:02,818 - vulnsight - INFO - GET /scan/report/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 3.54ms
+2026-04-09 21:36:04,285 - vulnsight - INFO - GET /scan/status/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 0.29ms
+2026-04-09 21:36:04,289 - vulnsight - INFO - GET /scan/report/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 1.26ms
+2026-04-09 21:36:06,811 - vulnsight - INFO - GET /scan/status/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 0.73ms
+2026-04-09 21:36:06,819 - vulnsight - INFO - GET /scan/report/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 3.61ms
+2026-04-09 21:36:08,285 - vulnsight - INFO - GET /scan/status/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 0.49ms
+2026-04-09 21:36:08,289 - vulnsight - INFO - GET /scan/report/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 1.77ms
+2026-04-09 21:36:10,813 - vulnsight - INFO - GET /scan/status/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 1.05ms
+2026-04-09 21:36:10,821 - vulnsight - INFO - GET /scan/report/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 4.16ms
+2026-04-09 21:36:12,284 - vulnsight - INFO - GET /scan/status/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 0.51ms
+2026-04-09 21:36:12,291 - vulnsight - INFO - GET /scan/report/1fb7305d-59ea-4c19-8ae7-08a3dd72f992 - Status: 200 - Duration: 3.33ms

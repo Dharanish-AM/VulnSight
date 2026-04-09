@@ -52,7 +52,12 @@ class FFUFAdapter:
             cmd = ["ffuf", "-u", base_url, "-w", wordlist, "-o", output_file, "-of", "json", "-s"]
             
             logger.info(f"Starting FFUF scan for {target}")
-            subprocess.run(cmd, capture_output=True, check=False) # ffuf might exit with non-zero if findings occur
+            # 2 minute timeout for the process
+            try:
+                subprocess.run(cmd, capture_output=True, check=False, timeout=120) 
+            except subprocess.TimeoutExpired:
+                logger.warning(f"FFUF scan timed out for {target}")
+                return []
             
             if not os.path.exists(output_file):
                 return []
