@@ -1,8 +1,14 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { api } from './api'
 
 function App() {
+  const getInitialTheme = () => {
+    const savedTheme = localStorage.getItem('vulnsight_theme')
+    if (savedTheme === 'dark' || savedTheme === 'light') return savedTheme
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  }
+
   const [target, setTarget] = useState(() => localStorage.getItem('vulnsight_target') || '')
   const [scanning, setScanning] = useState(false)
   const [scanId, setScanId] = useState(null)
@@ -17,7 +23,46 @@ function App() {
   const [history, setHistory] = useState([])
   const [showHistory, setShowHistory] = useState(true)
   const [expandedVuln, setExpandedVuln] = useState(null)
-  const [theme, setTheme] = useState(() => localStorage.getItem('vulnsight_theme') || 'dark')
+  const [theme, setTheme] = useState(getInitialTheme)
+  const [severityFilter, setSeverityFilter] = useState('all')
+  const [vulnSearch, setVulnSearch] = useState('')
+
+  const severityOrder = {
+    critical: 4,
+    high: 3,
+    medium: 2,
+    low: 1,
+  }
+
+  const filteredVulnerabilities = useMemo(() => {
+    const vulnerabilities = results?.vulnerabilities || []
+    return vulnerabilities
+      .filter((vuln) => {
+        if (severityFilter === 'all') return true
+        return String(vuln.severity || '').toLowerCase() === severityFilter
+      })
+      .filter((vuln) => {
+        const term = vulnSearch.trim().toLowerCase()
+        if (!term) return true
+        return [vuln.component, vuln.cve_id, vuln.description, vuln.source_tool]
+          .filter(Boolean)
+          .some((field) => String(field).toLowerCase().includes(term))
+      })
+      .sort((a, b) => {
+        const severityDelta = (severityOrder[String(b.severity || '').toLowerCase()] || 0) - (severityOrder[String(a.severity || '').toLowerCase()] || 0)
+        if (severityDelta !== 0) return severityDelta
+        return (Number(b.cvss) || 0) - (Number(a.cvss) || 0)
+      })
+  }, [results, severityFilter, vulnSearch])
+
+  const severityCounts = useMemo(() => {
+    const counts = { critical: 0, high: 0, medium: 0, low: 0 }
+    ;(results?.vulnerabilities || []).forEach((vuln) => {
+      const key = String(vuln.severity || '').toLowerCase()
+      if (counts[key] !== undefined) counts[key] += 1
+    })
+    return counts
+  }, [results])
 
   const pollingRef = useRef(null)
   const chatEndRef = useRef(null)
@@ -140,6 +185,8 @@ function App() {
     setResults(null)
     setStatus('queued')
     setChatMessages([])
+    setSeverityFilter('all')
+    setVulnSearch('')
     localStorage.setItem('vulnsight_target', target)
     try {
       const { scan_id } = await api.startScan(target)
@@ -214,30 +261,30 @@ function App() {
   }
 
   return (
-    <div className="h-screen bg-[#050505] text-[#fcfcfc] flex flex-col font-sans selection:bg-blue-500/20 selection:text-blue-400 overflow-hidden">
-      <header className="h-20 shrink-0 flex items-center px-8 justify-between z-50 sticky top-0 bg-[#050505]/80 backdrop-blur-xl border-b border-white/5">
+    <div className="app-shell h-screen flex flex-col overflow-hidden">
+      <header className="topbar h-20 shrink-0 flex items-center px-4 sm:px-8 justify-between z-50 sticky top-0">
         <div className="flex items-center gap-4">
           <button 
             onClick={() => setShowHistory(!showHistory)}
-            className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+            className="icon-btn w-10 h-10 rounded-xl flex items-center justify-center transition-colors"
           >
-             <svg className={`w-5 h-5 text-white/60 transition-transform ${showHistory ? '' : 'rotate-180'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+             <svg className={`w-5 h-5 text-(--text-muted) transition-transform ${showHistory ? '' : 'rotate-180'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
             </svg>
           </button>
-          <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-[0_0_20px_rgba(37,99,235,0.4)]">
+          <div className="w-10 h-10 rounded-xl bg-(--accent-primary) flex items-center justify-center shadow-[0_0_20px_var(--accent-primary-glow)]">
             <span className="font-bold text-lg">V</span>
           </div>
           <div className="flex flex-col">
             <h1 className="text-lg font-semibold tracking-tight leading-none">VulnSight</h1>
-            <span className="text-[10px] text-blue-500 font-medium tracking-[0.2em] uppercase mt-1">Intelligence System</span>
+            <span className="text-[10px] text-(--accent-primary) font-medium tracking-[0.2em] uppercase mt-1">Intelligence System</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-3 sm:gap-6">
           <button 
             onClick={toggleTheme}
-            className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+            className="icon-btn min-w-10 h-10 rounded-xl px-3 flex items-center justify-center gap-2 transition-colors"
             title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
           >
             {theme === 'dark' ? (
@@ -249,47 +296,48 @@ function App() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
               </svg>
             )}
+            <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-wider text-(--text-muted)">{theme}</span>
           </button>
           
-          <div className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2">
+          <div className="status-pill px-3 py-1 rounded-full flex items-center gap-2">
             <div className={`w-1.5 h-1.5 rounded-full bg-emerald-500 ${scanning ? 'animate-pulse' : ''}`} />
-            <span className="text-[10px] font-semibold text-emerald-500 uppercase tracking-wider">
+            <span className="text-[10px] font-semibold text-emerald-500 uppercase tracking-wider whitespace-nowrap">
               {scanning ? `Scanner: ${status?.toUpperCase()}` : 'System Ready'}
             </span>
           </div>
         </div>
       </header>
 
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex flex-col xl:flex-row overflow-hidden">
         {/* History Sidebar */}
-        <aside className={`${showHistory ? 'w-80' : 'w-0'} bg-[#070707] border-r border-white/5 transition-all duration-500 overflow-hidden flex flex-col shrink-0`}>
-          <div className="p-6 border-b border-white/5">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-white/30">Scan History</h3>
+        <aside className={`history-panel ${showHistory ? 'max-h-64 xl:max-h-none xl:w-80' : 'max-h-0 xl:w-0'} transition-all duration-500 overflow-hidden flex flex-col shrink-0`}>
+          <div className="p-6 border-b border-(--chrome-border)">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-(--text-dim)">Scan History</h3>
           </div>
           <div className="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar">
             {history.map((item) => (
               <div 
                 key={item.id} 
                 onClick={() => handleHistorySelect(item.id)}
-                className={`group p-4 rounded-2xl cursor-pointer transition-all border ${scanId === item.id ? 'bg-blue-600/10 border-blue-500/30' : 'bg-white/5 border-transparent hover:border-white/10'}`}
+                className={`group p-4 rounded-2xl cursor-pointer transition-all border ${scanId === item.id ? 'bg-(--accent-soft) border-(--accent-border)' : 'surface border-transparent hover:border-(--chrome-border-bright)'}`}
               >
                 <div className="flex justify-between items-start mb-1">
-                  <span className={`text-[8px] font-bold uppercase tracking-tighter ${scanId === item.id ? 'text-blue-400' : 'text-white/20'}`}>
+                  <span className={`text-[8px] font-bold uppercase tracking-tighter ${scanId === item.id ? 'text-(--accent-primary)' : 'text-(--text-dim)'}`}>
                     {item.status}
                   </span>
                   <button 
                     onClick={(e) => handleDeleteScan(e, item.id)}
-                    className="p-1 text-white/10 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100"
+                    className="p-1 text-(--text-dim) hover:text-red-500 transition-all opacity-0 group-hover:opacity-100"
                   >
                     <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
                   </button>
                 </div>
-                <h4 className="text-sm font-bold truncate text-white/80">{item.target}</h4>
+                <h4 className="text-sm font-bold truncate text-(--text-main)">{item.target}</h4>
                 <div className="flex justify-between items-center mt-2">
-                  <span className="text-[10px] text-white/20">{item.vulnerability_count} Findings</span>
-                  <span className="text-[10px] text-white/20 font-medium">
+                  <span className="text-[10px] text-(--text-dim)">{item.vulnerability_count} Findings</span>
+                  <span className="text-[10px] text-(--text-dim) font-medium">
                     {item.timestamp ? new Date(item.timestamp * 1000).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) : ''}
                   </span>
                 </div>
@@ -298,19 +346,19 @@ function App() {
           </div>
         </aside>
 
-        <main className="flex-1 overflow-y-auto p-12 custom-scrollbar space-y-16">
+        <main className="flex-1 overflow-y-auto p-5 sm:p-8 xl:p-12 custom-scrollbar space-y-10 xl:space-y-16">
           <section className="max-w-2xl mx-auto w-full text-center space-y-8">
             <div className="space-y-3">
-              <h2 className="text-4xl font-bold tracking-tight bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent">Infrastructure Analysis</h2>
-              <p className="text-white/40 text-sm font-medium tracking-wide">Enter target domain or IP for intelligence gathering</p>
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight hero-title">Infrastructure Analysis</h2>
+              <p className="text-(--text-muted) text-sm font-medium tracking-wide">Enter target domain or IP for intelligence gathering</p>
             </div>
 
-            <div className="glass rounded-[2rem] p-2 border-white/10 shadow-2xl group focus-within:border-blue-500/30 transition-all duration-500">
-              <div className="flex items-center bg-white/5 rounded-[1.75rem] px-4">
+            <div className="glass rounded-4xl p-2 border-(--chrome-border) shadow-2xl group focus-within:border-(--accent-border) transition-all duration-500">
+              <div className="flex items-center surface rounded-[1.75rem] px-2 sm:px-4">
                 <input
                   type="text"
                   placeholder="Target domain or IP address..."
-                  className="flex-1 bg-transparent border-none py-5 px-3 text-white placeholder-white/20 font-medium focus:ring-0"
+                  className="flex-1 bg-transparent border-none py-5 px-3 text-(--text-main) placeholder-(--text-dim) font-medium focus:ring-0"
                   value={target}
                   onChange={(e) => setTarget(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleScan()}
@@ -318,9 +366,9 @@ function App() {
                 <button
                   onClick={handleScan}
                   disabled={scanning}
-                  className={`px-8 h-12 rounded-2xl font-bold text-sm transition-all duration-300 ${scanning
-                    ? 'bg-white/5 text-white/20 cursor-not-allowed'
-                    : 'bg-white text-black hover:bg-blue-600 hover:text-white shadow-xl active:scale-95'
+                  className={`px-4 sm:px-8 h-12 rounded-2xl font-bold text-sm transition-all duration-300 ${scanning
+                    ? 'surface text-(--text-dim) cursor-not-allowed'
+                    : 'primary-btn shadow-xl active:scale-95'
                     }`}
                 >
                   {scanning ? 'Scanning...' : 'Kickoff Scan'}
@@ -332,44 +380,79 @@ function App() {
           <section className="max-w-6xl mx-auto w-full space-y-10 pb-20">
             {results && (
               <div className="space-y-12">
-                <div className="flex items-center justify-between border-b border-white/5 pb-6">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-(--chrome-border) pb-6">
                   <div>
                     <h3 className="text-2xl font-bold tracking-tight">Intelligence Report</h3>
-                    <p className="text-xs text-white/30 font-medium uppercase tracking-widest mt-1">{results.target}</p>
+                    <p className="text-xs text-(--text-dim) font-medium uppercase tracking-widest mt-1">{results.target}</p>
                   </div>
-                  <div className="flex gap-4 items-center">
+                  <div className="flex flex-wrap gap-4 items-center">
                     <div className="flex gap-2">
                       <button 
                         onClick={() => handleExport('csv')}
-                        className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-wider hover:bg-white/10 transition-all"
+                        className="ghost-btn px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all"
                       >
                         Export CSV
                       </button>
                       <button 
                          onClick={() => handleExport('json')}
-                        className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-wider hover:bg-white/10 transition-all"
+                        className="ghost-btn px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all"
                       >
                         Export JSON
                       </button>
                     </div>
-                    <div className="w-px h-8 bg-white/5" />
+                    <div className="w-px h-8 bg-(--chrome-border)" />
                     <div className="text-center px-4">
-                      <p className="text-[10px] text-white/20 font-bold uppercase tracking-widest">Findings</p>
-                      <p className="text-lg font-bold">{results.vulnerabilities?.length || 0}</p>
+                      <p className="text-[10px] text-(--text-dim) font-bold uppercase tracking-widest">Findings</p>
+                      <p className="text-lg font-bold">{filteredVulnerabilities.length}</p>
                     </div>
                     <div className="text-center px-4">
-                      <p className="text-[10px] text-white/20 font-bold uppercase tracking-widest">Paths</p>
+                      <p className="text-[10px] text-(--text-dim) font-bold uppercase tracking-widest">Paths</p>
                       <p className="text-lg font-bold">{results.attack_paths?.length || 0}</p>
                     </div>
                   </div>
                 </div>
 
+                <div className="surface border border-(--chrome-border) rounded-3xl p-4 sm:p-5 flex flex-col gap-4">
+                  <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+                    <p className="text-xs font-semibold tracking-wider uppercase text-(--text-dim)">Vulnerability Lens</p>
+                    <div className="relative w-full sm:w-80">
+                      <input
+                        type="text"
+                        value={vulnSearch}
+                        onChange={(e) => setVulnSearch(e.target.value)}
+                        placeholder="Search by CVE, service, or tool..."
+                        className="w-full h-10 rounded-xl border border-(--chrome-border-bright) bg-transparent px-3 text-sm text-(--text-main) placeholder-(--text-dim) focus:border-(--accent-border)"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      ['all', 'All', results.vulnerabilities?.length || 0],
+                      ['critical', 'Critical', severityCounts.critical],
+                      ['high', 'High', severityCounts.high],
+                      ['medium', 'Medium', severityCounts.medium],
+                      ['low', 'Low', severityCounts.low],
+                    ].map(([key, label, count]) => (
+                      <button
+                        key={key}
+                        onClick={() => setSeverityFilter(key)}
+                        className={`px-3 py-1.5 rounded-xl text-[11px] font-semibold border transition-colors ${severityFilter === key
+                          ? 'border-(--accent-border) bg-(--accent-soft) text-(--accent-primary)'
+                          : 'border-(--chrome-border) text-(--text-muted) hover:border-(--chrome-border-bright)'
+                          }`}
+                      >
+                        {label} ({count})
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {results.vulnerabilities?.map((vuln, i) => (
+                  {filteredVulnerabilities.map((vuln, i) => (
                     <div 
                       key={i} 
                       onClick={() => setExpandedVuln(expandedVuln === i ? null : i)}
-                      className={`premium-card edge-shine rounded-[2rem] p-6 space-y-6 cursor-pointer transition-all ${expandedVuln === i ? 'ring-2 ring-blue-500/50 scale-[1.02]' : ''}`}
+                      className={`premium-card edge-shine rounded-4xl p-6 space-y-6 cursor-pointer transition-all ${expandedVuln === i ? 'ring-2 ring-blue-500/50 scale-[1.02]' : ''}`}
                     >
                       <div className="flex justify-between items-start">
                         <div className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${vuln.severity === 'Critical' ? 'bg-red-500/10 text-red-500' :
@@ -378,48 +461,54 @@ function App() {
                           }`}>
                           {vuln.severity}
                         </div>
-                        <span className="text-[10px] font-mono text-white/20">{vuln.cve_id}</span>
+                        <span className="text-[10px] font-mono text-(--text-dim)">{vuln.cve_id}</span>
                       </div>
 
                       <div className="space-y-2">
                         <h4 className="text-lg font-bold tracking-tight leading-tight">{vuln.component}</h4>
-                        <p className={`text-xs text-white/40 leading-relaxed ${expandedVuln === i ? '' : 'line-clamp-3'}`}>
+                        <p className={`text-xs text-(--text-muted) leading-relaxed ${expandedVuln === i ? '' : 'line-clamp-3'}`}>
                           {vuln.description}
                         </p>
                       </div>
 
                       {expandedVuln === i && (
-                        <div className="pt-4 border-t border-white/5 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                        <div className="pt-4 border-t border-(--chrome-border) space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
                            <div className="grid grid-cols-2 gap-4">
                               <div className="space-y-1">
-                                <span className="text-[8px] font-bold text-white/20 uppercase">Port/Service</span>
+                                <span className="text-[8px] font-bold text-(--text-dim) uppercase">Port/Service</span>
                                 <span className="text-[10px] font-bold block">{vuln.port || 'N/A'}</span>
                               </div>
                               <div className="space-y-1">
-                                <span className="text-[8px] font-bold text-white/20 uppercase">Protocol</span>
+                                <span className="text-[8px] font-bold text-(--text-dim) uppercase">Protocol</span>
                                 <span className="text-[10px] font-bold block">{vuln.protocol || 'TCP'}</span>
                               </div>
                            </div>
                            <div className="space-y-1">
-                              <span className="text-[8px] font-bold text-white/20 uppercase">Remediation Guidance</span>
-                              <p className="text-[10px] text-white/60 leading-relaxed">{vuln.remediation || 'No specific remediation data available yet. Use Neural Core for advice.'}</p>
+                              <span className="text-[8px] font-bold text-(--text-dim) uppercase">Remediation Guidance</span>
+                              <p className="text-[10px] text-(--text-muted) leading-relaxed">{vuln.remediation || 'No specific remediation data available yet. Use Neural Core for advice.'}</p>
                            </div>
                         </div>
                       )}
 
-                      <div className="pt-4 border-t border-white/5 flex justify-between items-center">
+                      <div className="pt-4 border-t border-(--chrome-border) flex justify-between items-center">
                         <div className="flex flex-col">
-                          <span className="text-[8px] font-bold text-white/20 uppercase">Tool Source</span>
-                          <span className="text-[10px] font-bold text-blue-500">{vuln.source_tool}</span>
+                          <span className="text-[8px] font-bold text-(--text-dim) uppercase">Tool Source</span>
+                          <span className="text-[10px] font-bold text-(--accent-primary)">{vuln.source_tool}</span>
                         </div>
                         <div className="flex flex-col items-end">
-                          <span className="text-[8px] font-bold text-white/20 uppercase">CVSS Score</span>
-                          <span className="text-[10px] font-bold text-white">{vuln.cvss || 'N/A'}</span>
+                          <span className="text-[8px] font-bold text-(--text-dim) uppercase">CVSS Score</span>
+                          <span className="text-[10px] font-bold text-(--text-main)">{vuln.cvss || 'N/A'}</span>
                         </div>
                       </div>
                     </div>
                   ))}
                 </div>
+
+                {filteredVulnerabilities.length === 0 && (
+                  <div className="surface border border-(--chrome-border) rounded-3xl p-8 text-center">
+                    <p className="text-sm text-(--text-muted)">No vulnerabilities match the current filters. Try changing severity or search text.</p>
+                  </div>
+                )}
 
                 {results.attack_paths?.length > 0 && (
                   <div className="space-y-8">
@@ -430,28 +519,28 @@ function App() {
                     <div className="space-y-6">
                       {results.attack_paths.map((path, idx) => (
                         <div key={idx} className="group relative">
-                          <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-[2rem] blur opacity-0 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
-                          <div className="relative bg-[#0a0a0a] border border-white/5 rounded-[1.75rem] p-8 flex flex-col gap-6">
+                          <div className="absolute -inset-0.5 bg-linear-to-r from-blue-500/20 to-purple-500/20 rounded-4xl blur opacity-0 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
+                          <div className="relative surface border border-(--chrome-border) rounded-[1.75rem] p-8 flex flex-col gap-6">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-3">
                                 <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest">Chain #{idx + 1}</span>
                                 <div className="h-px w-8 bg-blue-500/20" />
-                                <span className="text-[10px] text-white/40 font-medium">Likelihood: {idx === 0 ? 'High' : 'Moderate'}</span>
+                                <span className="text-[10px] text-(--text-muted) font-medium">Likelihood: {idx === 0 ? 'High' : 'Moderate'}</span>
                               </div>
                             </div>
                             
                             <div className="flex items-center gap-4 flex-wrap">
                               {path.map((node, nIdx) => (
                                 <div key={nIdx} className="flex items-center gap-4">
-                                  <div className="relative px-5 py-3 bg-white/5 rounded-[1.25rem] border border-white/10 group-hover:border-blue-500/30 transition-colors shadow-2xl">
+                                  <div className="relative px-5 py-3 surface rounded-[1.25rem] border border-(--chrome-border-bright) group-hover:border-(--accent-border) transition-colors shadow-2xl">
                                     <div className="flex items-center gap-3">
                                       <div className={`w-1.5 h-1.5 rounded-full ${nIdx === 0 ? 'bg-emerald-500' : nIdx === path.length - 1 ? 'bg-red-500' : 'bg-blue-500'} shadow-[0_0_8px_rgba(255,255,255,0.2)]`} />
-                                      <span className="text-[11px] font-bold uppercase tracking-wider text-white/80">{node}</span>
+                                      <span className="text-[11px] font-bold uppercase tracking-wider text-(--text-main)">{node}</span>
                                     </div>
                                   </div>
                                   {nIdx < path.length - 1 && (
                                     <div className="flex flex-col items-center gap-1">
-                                      <svg className="w-5 h-5 text-white/10 group-hover:text-blue-500/30 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <svg className="w-5 h-5 text-(--text-dim) group-hover:text-(--accent-primary) transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                                       </svg>
                                     </div>
@@ -469,28 +558,28 @@ function App() {
             )}
 
             {!results && !scanning && (
-              <div className="h-64 flex flex-col items-center justify-center text-center glass rounded-[3rem] border-white/5">
-                <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6">
-                  <svg className="w-8 h-8 text-white/10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="h-64 flex flex-col items-center justify-center text-center glass rounded-[3rem] border-(--chrome-border)">
+                <div className="w-16 h-16 rounded-full surface border border-(--chrome-border-bright) flex items-center justify-center mb-6">
+                  <svg className="w-8 h-8 text-(--text-dim)" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 11V3m0 8l-4-4m4 4l4-4M2 17l.621 2.485A2 2 0 004.561 21h14.878a2 2 0 001.94-1.515L22 17" />
                   </svg>
                 </div>
-                <h4 className="text-sm font-semibold text-white/40 uppercase tracking-[0.3em]">Awaiting Analysis</h4>
+                <h4 className="text-sm font-semibold text-(--text-muted) uppercase tracking-[0.3em]">Awaiting Analysis</h4>
               </div>
             )}
           </section>
         </main>
 
-        <aside className="w-[450px] bg-[#050505] border-l border-white/5 flex flex-col z-20">
-          <div className="h-20 px-10 border-b border-white/5 flex items-center justify-between">
+        <aside className="chat-panel w-full xl:w-107.5 border-l border-(--chrome-border) flex flex-col z-20">
+          <div className="h-20 px-6 sm:px-10 border-b border-(--chrome-border) flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.6)]" />
-              <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-white/80">Neural Core</h3>
+              <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-(--text-main)">Neural Core</h3>
             </div>
             {chatMessages.length > 0 && (
               <button 
                 onClick={clearChat}
-                className="text-[10px] font-bold uppercase tracking-widest text-white/20 hover:text-red-500 transition-colors"
+                className="text-[10px] font-bold uppercase tracking-widest text-(--text-dim) hover:text-red-500 transition-colors"
                 title="Clear Chat History"
               >
                 Clear
@@ -498,10 +587,10 @@ function App() {
             )}
           </div>
 
-          <div className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 custom-scrollbar">
             {chatMessages.length === 0 && (
-              <div className="glass rounded-3xl p-6 border-white/5">
-                <p className="text-sm text-white/60 leading-relaxed">
+              <div className="glass rounded-3xl p-6 border-(--chrome-border)">
+                <p className="text-sm text-(--text-muted) leading-relaxed">
                   Bridge online. Use the input below to query information about the latest scan or general security remediation.
                 </p>
               </div>
@@ -510,8 +599,8 @@ function App() {
             {chatMessages.map((msg, idx) => (
               <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[90%] px-5 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === 'user'
-                  ? 'bg-blue-600 text-white shadow-[0_4px_12px_rgba(37,99,235,0.2)]'
-                  : 'bg-white/5 text-white/80 border border-white/5'
+                  ? 'bg-(--accent-primary) text-white shadow-[0_4px_12px_var(--accent-primary-glow)]'
+                  : 'surface text-(--text-main) border border-(--chrome-border)'
                   }`}>
                   <div className="markdown-container">
                     <ReactMarkdown>{msg.content}</ReactMarkdown>
@@ -522,7 +611,7 @@ function App() {
             
             {chatLoading && (
               <div className="flex justify-start">
-                <div className="bg-white/5 border border-white/5 rounded-2xl text-white/50">
+                <div className="surface border border-(--chrome-border) rounded-2xl text-(--text-muted)">
                   <div className="typing-indicator">
                     <div className="typing-dot"></div>
                     <div className="typing-dot"></div>
@@ -534,18 +623,18 @@ function App() {
             <div ref={chatEndRef} />
           </div>
 
-          <div className="p-8 border-t border-white/5">
-            <form onSubmit={handleChat} className="bg-white/5 border border-white/10 rounded-2xl p-1.5 flex focus-within:border-blue-500/30 transition-all">
+          <div className="p-6 sm:p-8 border-t border-(--chrome-border)">
+            <form onSubmit={handleChat} className="surface border border-(--chrome-border-bright) rounded-2xl p-1.5 flex focus-within:border-(--accent-border) transition-all">
               <input
                 type="text"
                 placeholder="Talk to Neural Core..."
-                className="flex-1 bg-transparent border-none text-sm px-4 py-3 text-white focus:ring-0"
+                className="flex-1 bg-transparent border-none text-sm px-4 py-3 text-(--text-main) placeholder-(--text-dim) focus:ring-0"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
               />
               <button
                 type="submit"
-                className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white"
+                className="primary-btn w-10 h-10 rounded-xl flex items-center justify-center text-white"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>

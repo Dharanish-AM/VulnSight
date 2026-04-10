@@ -1,25 +1,28 @@
 @import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@400;500;600;700;800&display=swap");
 
 :root {
-  --bg-base: #050505;
-  --bg-surface: rgba(15, 15, 18, 0.6);
-  --bg-surface-elevated: rgba(30, 30, 35, 0.4);
+  --bg-base: #05070d;
+  --bg-surface: rgba(13, 16, 27, 0.78);
+  --bg-surface-elevated: rgba(20, 24, 40, 0.9);
+  --bg-chrome: rgba(9, 11, 19, 0.88);
 
-  --chrome-border: rgba(255, 255, 255, 0.05);
-  --chrome-border-bright: rgba(255, 255, 255, 0.12);
+  --chrome-border: rgba(148, 163, 184, 0.16);
+  --chrome-border-bright: rgba(148, 163, 184, 0.28);
 
-  --accent-primary: #3b82f6;
-  --accent-primary-glow: rgba(59, 130, 246, 0.15);
+  --accent-primary: #22d3ee;
+  --accent-primary-glow: rgba(34, 211, 238, 0.35);
+  --accent-soft: rgba(34, 211, 238, 0.12);
+  --accent-border: rgba(34, 211, 238, 0.45);
   --accent-success: #10b981;
   --accent-danger: #ef4444;
 
-  --text-main: #fcfcfc;
+  --text-main: #e5edf9;
   --text-muted: #94a3b8;
-  --text-dim: #475569;
+  --text-dim: #5f748f;
 
-  --font-sans: "Inter", sans-serif;
-  --font-display: "Outfit", sans-serif;
+  --font-sans: "Space Grotesk", sans-serif;
+  --font-display: "Sora", sans-serif;
 
   background-color: var(--bg-base);
   color: var(--text-main);
@@ -27,18 +30,21 @@
 }
 
 [data-theme="light"] {
-  --bg-base: #f8fafc;
-  --bg-surface: rgba(255, 255, 255, 0.7);
-  --bg-surface-elevated: rgba(255, 255, 255, 0.9);
+  --bg-base: #f1f5f9;
+  --bg-surface: rgba(255, 255, 255, 0.84);
+  --bg-surface-elevated: rgba(255, 255, 255, 0.97);
+  --bg-chrome: rgba(244, 248, 255, 0.86);
 
-  --chrome-border: rgba(0, 0, 0, 0.05);
-  --chrome-border-bright: rgba(0, 0, 0, 0.1);
+  --chrome-border: rgba(15, 23, 42, 0.12);
+  --chrome-border-bright: rgba(15, 23, 42, 0.2);
 
-  --accent-primary: #2563eb;
-  --accent-primary-glow: rgba(37, 99, 235, 0.1);
+  --accent-primary: #0369a1;
+  --accent-primary-glow: rgba(3, 105, 161, 0.28);
+  --accent-soft: rgba(3, 105, 161, 0.08);
+  --accent-border: rgba(3, 105, 161, 0.35);
 
   --text-main: #0f172a;
-  --text-muted: #475569;
+  --text-muted: #334155;
   --text-dim: #64748b;
   
   color-scheme: light;
@@ -56,14 +62,23 @@ body {
   font-family: var(--font-sans);
   background-color: var(--bg-base);
   background-image:
-    radial-gradient(
-      circle at 50% 0%,
-      rgba(59, 130, 246, 0.05) 0%,
-      transparent 60%
-    );
+    radial-gradient(circle at 5% -10%, rgba(34, 211, 238, 0.2), transparent 38%),
+    radial-gradient(circle at 100% 0%, rgba(59, 130, 246, 0.18), transparent 34%),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.35) 0%, transparent 46%);
   background-attachment: fixed;
   height: 100vh;
   overflow: hidden;
+}
+
+[data-theme="light"] body {
+  background-image:
+    radial-gradient(circle at 0% 0%, rgba(14, 165, 233, 0.16), transparent 40%),
+    radial-gradient(circle at 100% 8%, rgba(56, 189, 248, 0.14), transparent 36%),
+    linear-gradient(180deg, rgba(226, 232, 240, 0.35) 0%, transparent 52%);
+}
+
+#root {
+  height: 100%;
 }
 
 h1,
@@ -76,9 +91,70 @@ h4 {
 
 .glass {
   background: var(--bg-surface);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   border: 1px solid var(--chrome-border);
+}
+
+.app-shell {
+  color: var(--text-main);
+}
+
+.topbar {
+  background: color-mix(in srgb, var(--bg-base) 70%, transparent);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--chrome-border);
+}
+
+.history-panel,
+.chat-panel {
+  background: var(--bg-chrome);
+}
+
+.surface {
+  background: var(--bg-surface);
+}
+
+.icon-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--chrome-border);
+}
+
+.icon-btn:hover {
+  border-color: var(--chrome-border-bright);
+  background: var(--bg-surface-elevated);
+}
+
+.status-pill {
+  background: color-mix(in srgb, var(--accent-success) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-success) 32%, transparent);
+}
+
+.hero-title {
+  color: var(--text-main);
+  letter-spacing: -0.03em;
+  text-shadow: 0 8px 30px color-mix(in srgb, var(--accent-primary) 18%, transparent);
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, var(--accent-primary), color-mix(in srgb, var(--accent-primary) 74%, #fff 26%));
+  color: white;
+}
+
+.primary-btn:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 10px 30px -12px var(--accent-primary-glow);
+}
+
+.ghost-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--chrome-border);
+  color: var(--text-main);
+}
+
+.ghost-btn:hover {
+  border-color: var(--accent-border);
+  color: var(--accent-primary);
 }
 
 .premium-card {
@@ -89,10 +165,10 @@ h4 {
 }
 
 .premium-card:hover {
-  border-color: var(--chrome-border-bright);
+  border-color: var(--accent-border);
   background: var(--bg-surface-elevated);
   transform: translateY(-2px);
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 20px 45px -20px color-mix(in srgb, var(--accent-primary) 30%, black);
 }
 
 .edge-shine {
@@ -130,12 +206,12 @@ h4 {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--text-muted) 28%, transparent);
   border-radius: 10px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: color-mix(in srgb, var(--text-muted) 45%, transparent);
 }
 
 @keyframes float {
@@ -154,6 +230,17 @@ h4 {
 
 input:focus {
   outline: none;
+}
+
+button,
+input {
+  font-family: inherit;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--accent-border);
+  outline-offset: 2px;
 }
 
 .markdown-container {
@@ -211,11 +298,34 @@ input:focus {
 }
 
 .markdown-container code {
-  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--accent-primary) 14%, transparent);
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
   font-family: inherit;
   font-size: 0.9em;
+}
+
+@media (max-width: 1279px) {
+  .chat-panel {
+    min-height: 40vh;
+    border-left: none;
+    border-top: 1px solid var(--chrome-border);
+  }
+
+  .history-panel {
+    border-right: none;
+    border-bottom: 1px solid var(--chrome-border);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Chat Loading Animation */
