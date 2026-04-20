@@ -377,9 +377,9 @@ function App() {
             </div>
           </section>
 
-          <section className="max-w-6xl mx-auto w-full space-y-10 pb-20">
+          <section className="max-w-6xl mx-auto w-full space-y-8 pb-20">
             {results && (
-              <div className="space-y-12">
+              <div className="space-y-10">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-(--chrome-border) pb-6">
                   <div>
                     <h3 className="text-2xl font-bold tracking-tight">Intelligence Report</h3>
@@ -452,7 +452,7 @@ function App() {
                     <div 
                       key={i} 
                       onClick={() => setExpandedVuln(expandedVuln === i ? null : i)}
-                      className={`premium-card edge-shine rounded-4xl p-6 space-y-6 cursor-pointer transition-all ${expandedVuln === i ? 'ring-2 ring-blue-500/50 scale-[1.02]' : ''}`}
+                      className={`premium-card edge-shine rounded-4xl p-6 space-y-5 cursor-pointer transition-all ${expandedVuln === i ? 'premium-card-active scale-[1.015]' : ''}`}
                     >
                       <div className="flex justify-between items-start">
                         <div className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${vuln.severity === 'Critical' ? 'bg-red-500/10 text-red-500' :
@@ -464,9 +464,9 @@ function App() {
                         <span className="text-[10px] font-mono text-(--text-dim)">{vuln.cve_id}</span>
                       </div>
 
-                      <div className="space-y-2">
+                      <div className="space-y-2 min-h-27">
                         <h4 className="text-lg font-bold tracking-tight leading-tight">{vuln.component}</h4>
-                        <p className={`text-xs text-(--text-muted) leading-relaxed ${expandedVuln === i ? '' : 'line-clamp-3'}`}>
+                        <p className={`text-sm text-(--text-muted) leading-relaxed ${expandedVuln === i ? '' : 'line-clamp-3'}`}>
                           {vuln.description}
                         </p>
                       </div>
@@ -475,29 +475,29 @@ function App() {
                         <div className="pt-4 border-t border-(--chrome-border) space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
                            <div className="grid grid-cols-2 gap-4">
                               <div className="space-y-1">
-                                <span className="text-[8px] font-bold text-(--text-dim) uppercase">Port/Service</span>
-                                <span className="text-[10px] font-bold block">{vuln.port || 'N/A'}</span>
+                                <span className="text-[9px] font-bold text-(--text-dim) uppercase">Port/Service</span>
+                                <span className="text-xs font-bold block">{vuln.port || 'N/A'}</span>
                               </div>
                               <div className="space-y-1">
-                                <span className="text-[8px] font-bold text-(--text-dim) uppercase">Protocol</span>
-                                <span className="text-[10px] font-bold block">{vuln.protocol || 'TCP'}</span>
+                                <span className="text-[9px] font-bold text-(--text-dim) uppercase">Protocol</span>
+                                <span className="text-xs font-bold block">{vuln.protocol || 'TCP'}</span>
                               </div>
                            </div>
                            <div className="space-y-1">
-                              <span className="text-[8px] font-bold text-(--text-dim) uppercase">Remediation Guidance</span>
-                              <p className="text-[10px] text-(--text-muted) leading-relaxed">{vuln.remediation || 'No specific remediation data available yet. Use Neural Core for advice.'}</p>
+                              <span className="text-[9px] font-bold text-(--text-dim) uppercase">Remediation Guidance</span>
+                              <p className="text-xs text-(--text-muted) leading-relaxed">{vuln.remediation || 'No specific remediation data available yet. Use Neural Core for advice.'}</p>
                            </div>
                         </div>
                       )}
 
                       <div className="pt-4 border-t border-(--chrome-border) flex justify-between items-center">
                         <div className="flex flex-col">
-                          <span className="text-[8px] font-bold text-(--text-dim) uppercase">Tool Source</span>
-                          <span className="text-[10px] font-bold text-(--accent-primary)">{vuln.source_tool}</span>
+                          <span className="text-[9px] font-bold text-(--text-dim) uppercase">Tool Source</span>
+                          <span className="text-xs font-bold text-(--accent-primary)">{vuln.source_tool}</span>
                         </div>
                         <div className="flex flex-col items-end">
-                          <span className="text-[8px] font-bold text-(--text-dim) uppercase">CVSS Score</span>
-                          <span className="text-[10px] font-bold text-(--text-main)">{vuln.cvss || 'N/A'}</span>
+                          <span className="text-[9px] font-bold text-(--text-dim) uppercase">CVSS Score</span>
+                          <span className="text-xs font-bold text-(--text-main)">{vuln.cvss || 'N/A'}</span>
                         </div>
                       </div>
                     </div>
@@ -570,7 +570,7 @@ function App() {
           </section>
         </main>
 
-        <aside className="chat-panel w-full xl:w-107.5 border-l border-(--chrome-border) flex flex-col z-20">
+        <aside className="chat-panel w-full xl:w-md border-l border-(--chrome-border) flex flex-col z-20">
           <div className="h-20 px-6 sm:px-10 border-b border-(--chrome-border) flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.6)]" />
@@ -598,9 +598,9 @@ function App() {
 
             {chatMessages.map((msg, idx) => (
               <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[90%] px-5 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === 'user'
+                <div className={`max-w-[95%] px-5 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === 'user'
                   ? 'bg-(--accent-primary) text-white shadow-[0_4px_12px_var(--accent-primary-glow)]'
-                  : 'surface text-(--text-main) border border-(--chrome-border)'
+                  : 'surface text-(--text-main) border border-(--chrome-border) ai-message'
                   }`}>
                   <div className="markdown-container">
                     <ReactMarkdown>{msg.content}</ReactMarkdown>

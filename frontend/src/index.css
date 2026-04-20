@@ -43,9 +43,9 @@
   --accent-soft: rgba(3, 105, 161, 0.08);
   --accent-border: rgba(3, 105, 161, 0.35);
 
-  --text-main: #0f172a;
-  --text-muted: #334155;
-  --text-dim: #64748b;
+  --text-main: #0b1220;
+  --text-muted: #1e2f46;
+  --text-dim: #4f637b;
   
   color-scheme: light;
 }
@@ -111,6 +111,10 @@ h4 {
   background: var(--bg-chrome);
 }
 
+.chat-panel {
+  min-width: 0;
+}
+
 .surface {
   background: var(--bg-surface);
 }
@@ -169,6 +173,13 @@ h4 {
   background: var(--bg-surface-elevated);
   transform: translateY(-2px);
   box-shadow: 0 20px 45px -20px color-mix(in srgb, var(--accent-primary) 30%, black);
+}
+
+.premium-card-active {
+  border-color: var(--accent-border);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent-primary) 35%, transparent),
+    0 16px 36px -20px color-mix(in srgb, var(--accent-primary) 42%, black);
 }
 
 .edge-shine {
@@ -247,6 +258,11 @@ input:focus-visible {
   line-height: 1.6;
 }
 
+.ai-message {
+  max-height: 26rem;
+  overflow: auto;
+}
+
 .markdown-container p {
   margin-bottom: 0.75rem;
 }
@@ -268,6 +284,13 @@ input:focus-visible {
 
 .markdown-container li {
   margin-bottom: 0.4rem;
+}
+
+.markdown-container a {
+  color: var(--accent-primary);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent-primary) 40%, transparent);
+  word-break: break-word;
 }
 
 .markdown-container ul {
