@@ -148,6 +148,26 @@ def ensure_indexed(scan_id: str):
             rag.index_report(scan_id, report.get("vulnerabilities", []))
             indexed_scans.add(scan_id)
 
+
+def ensure_attack_paths(scan_id: str):
+    if scan_id not in scans:
+        return
+
+    report = scans[scan_id]
+    if report.get("status") != "completed":
+        return
+
+    if report.get("attack_paths"):
+        return
+
+    attack_engine.generate_graph(report.get("vulnerabilities", []))
+    report["attack_paths"] = attack_engine.get_ranked_chains()
+
+    path = f"data/reports/{scan_id}.json"
+    if os.path.exists(path):
+        with open(path, "w") as f:
+            json.dump(report, f)
+
 @router.get("/scan/report/{id}")
 async def get_report(id: str):
     if id not in scans:
@@ -160,6 +180,8 @@ async def get_report(id: str):
             
     if scans[id].get("status") not in ["completed", "running"]:
         raise HTTPException(status_code=400, detail="Scan not yet in a state to provide report")
+
+    ensure_attack_paths(id)
         
     return scans[id]
 
